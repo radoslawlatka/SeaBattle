@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Sea Battle</string>
+    <string name="label_login">Logowanie</string>
+    <string name="label_remind_passord">Przypomnij hasło</string>
+    <string name="label_create_account">Załóż konto</string>
+    <string name="label_bluetooth_devices">Wybierz urządzenie</string>
+    <string name="label_statistics">Statystyki</string>
+    <string name="action_settings">Settings</string>
+    <string name="btn_login">Zaloguj</string>
+    <string name="btn_logout">Wyloguj</string>
+    <string name="btn_new_game">Nowa gra</string>
+    <string name="btn_statistics">Statystyki</string>
+    <string name="btn_options">Opcje</string>
+    <string name="btn_exit">Wyjście</string>
+    <string name="btn_vs_android">vs Android</string>
+    <string name="btn_bluetooth">Bluetooth</string>
+    <string name="btn_wifi">WiFi</string>
+    <string name="btn_scan">Skanuj</string>
+    <string name="btn_create_account">Załóż konto</string>
+    <string name="txt_username">Użytkownik</string>
+    <string name="txt_password">Hasło</string>
+    <string name="txt_confirm_password">Potwierdź hasło</string>
+    <string name="txt_login">Logowanie</string>
+    <string name="txt_not_logged_in">Nie zalogowano</string>
+    <string name="txt_paired_devices">Sparowane urządzenia</string>
+    <string name="txt_new_devices">Nowe urządzenia</string>
+    <string name="txt_on_off_sound">Wł/Wył dźwięk</string>
+    <string name="txt_on_off_vibration">Wł/Wył wibracje</string>
+    <string name="txt_forget_password"> <u>Nie pamiętasz hasła?</u></string>
+    <string name="txt_email">Adres e-mail</string>
+    <string name="txt_not_found">Nie znaleziono</string>
+    <string name="txt_wins">Wygrane</string>
+    <string name="txt_losses">Przergane</string>
+    <string name="toast_empty_fields">Pola nie mogą być puste</string>
+    <string name="toast_password_not_match">Hasła muszą być identyczne</string>
+    <string name="toast_invalid_email">Nieprawidłowy adres email</string>
+    <string name="toast_bluetooth_not_available">Bluetooth jest niedostępny</string>
+
+</resources>

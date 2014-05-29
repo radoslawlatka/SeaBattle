@@ -1,0 +1,71 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:scrollbars="none" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/Title"
+            android:padding="@dimen/margin_big"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/app_name" />
+
+        <Button
+            android:id="@+id/btn_new_game"
+            style="@style/Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/btn_menu_height"
+            android:layout_marginTop="@dimen/margin_normall"
+            android:text="@string/btn_new_game" />
+
+        <Button
+            android:id="@+id/btn_login"
+            style="@style/Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/btn_menu_height"
+            android:layout_marginTop="@dimen/margin_normall"
+            android:text="@string/btn_login" />
+
+        <Button
+            android:id="@+id/btn_statistics"
+            style="@style/Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/btn_menu_height"
+            android:layout_marginTop="@dimen/margin_normall"
+            android:text="@string/btn_statistics" />
+
+        <Button
+            android:id="@+id/btn_options"
+            style="@style/Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/btn_menu_height"
+            android:layout_marginTop="@dimen/margin_normall"
+            android:text="@string/btn_options" />
+
+        <Button
+            android:id="@+id/btn_exit"
+            style="@style/Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/btn_menu_height"
+            android:layout_marginTop="@dimen/margin_normall"
+            android:text="@string/btn_exit" />
+
+    </LinearLayout>
+
+</ScrollView>

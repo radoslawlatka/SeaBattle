@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="sepia_dark">#36C</color>
+    <color name="sepia_light">#F0CA79</color>
+    <color name="btn_start">#9F863E</color>
+    <color name="btn_end">#8A5115</color>
+</resources>
