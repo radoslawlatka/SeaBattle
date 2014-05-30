@@ -221,7 +221,7 @@ public class GameVsAndroidActivity extends Activity {
 			{
 				state = END_GAME;
 //				boardView.setBoardAndDraw(player1.getOpponentsArea());
-				Toast.makeText(getApplicationContext(), "Wygrana Androida", Toast.LENGTH_LONG).show();
+				showWinnersMassage();
 				boardView.setBlocked(true);
 			}
 			else if (retval == 3)
@@ -232,6 +232,17 @@ public class GameVsAndroidActivity extends Activity {
 				boardView.setBlocked(false);
 			}
 			return null;
+		}
+		
+		private void showWinnersMassage()
+		{
+			runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					Toast.makeText(getApplicationContext(), "Wygrana Androida", Toast.LENGTH_LONG).show();
+				}
+			});			
 		}
 		
 		private void setCurrentPlayerName()
@@ -271,7 +282,6 @@ public class GameVsAndroidActivity extends Activity {
 			try {
 				Thread.sleep(time);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}			
 		}
