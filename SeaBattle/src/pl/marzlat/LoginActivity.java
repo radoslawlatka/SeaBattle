@@ -211,6 +211,8 @@ public class LoginActivity extends Activity {
 
 		@Override
 		protected void onPreExecute() {
+			
+			
 			super.onPreExecute();
 			progressBar.setVisibility(View.VISIBLE);
 		}
@@ -219,7 +221,7 @@ public class LoginActivity extends Activity {
 		protected Boolean doInBackground(String... params) {
 
 			username = params[0];
-			password = params[1];
+			password = Sha256.encode(params[0],params[1], 500);
 			try {
 				db.open();
 
@@ -271,7 +273,7 @@ public class LoginActivity extends Activity {
 
 			try {
 				db.open();
-				db.addUser(params[0], params[1], params[2]);
+				db.addUser(params[0], Sha256.encode(params[0],params[1], 500),  params[2]);
 				return true;
 
 			} catch (MySQLIntegrityConstraintViolationException e) {
