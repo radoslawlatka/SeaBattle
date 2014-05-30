@@ -17,7 +17,8 @@ public class BoardView extends View {
 
 	private Board mBoard;
 	private boolean blocked = false;
-	Paint p = new Paint();
+	private int clickedX = -1;
+	private int clickedY = -1;
 	
 	public BoardView(Context context, AttributeSet attrs) {
 	    super(context, attrs);
@@ -60,15 +61,19 @@ public class BoardView extends View {
 		{
 			Square s = mBoard.getSquaresOnPosition(event.getX(), event.getY());
 			
-			
-			p.setColor(Color.BLUE);
-			p.setARGB(255, 120, 120, 120);
-			if (s != null)
+			if (s != null && s.getColor().getColor() == Square.FREE)
 			{
-				Log.d("click", s.getRow() + " " + s.getColumn() + " " + event.getX() + " " + event.getY());
-				s.setColor(p);
+				clickedX = s.getColumn();
+				clickedY = s.getRow();
+				Log.d("click", s.getColumn() + " " + s.getRow()+ " " + event.getX() + " " + event.getY());
 			}
-		invalidate();
+			else
+			{
+				clickedX = -1;
+				clickedY = -1;
+			}
+
+			invalidate();
 		}
 		return super.onTouchEvent(event);
 	}
@@ -77,12 +82,6 @@ public class BoardView extends View {
 	{
 		
 		showAreaOnBoard(area);
-    	int i, j;
-        for (i = 0; i < Area.SIZE; i++) {
-            for (j = 0; j < Area.SIZE; j++) {
-            	Log.d("Colors mBoard", ""+mBoard.getSquare(j, i).getColor().getColor());
-            }
-        }
 		Log.d("BoardView", "setBoardAndDraw: Created new Board");
 		invalidate();
 	}
@@ -90,31 +89,28 @@ public class BoardView extends View {
 	private void showAreaOnBoard(Area area)
     {
     	int i, j;
+    	Paint p = new Paint();
         for (i = 0; i < Area.SIZE; i++) {
             for (j = 0; j < Area.SIZE; j++) {
                 Field field = area.getField(j, i);
                 Square square = mBoard.getSquare(j, i);
                 if (field.getState() == Field.BUSY)
                 {	
-                	Paint paint = new Paint();
                 	p.setColor(Square.BUSY);
                 	square.setColor(new Paint(p));
                 }
             	else if (field.getState() == Field.STRUCK)
             	{
-                	Paint paint = new Paint();
                 	p.setColor(Square.STRUCK);
                 	square.setColor(new Paint(p));
             	}
                 else if (field.getState() == Field.MISSED)
                 {
-                	Paint paint = new Paint();
                 	p.setColor(Square.MISSED);
                 	square.setColor(new Paint(p));
                 }
             	else
             	{
-                	Paint paint = new Paint();
                 	p.setColor(Square.FREE);
                 	square.setColor(new Paint(p));
             	}
@@ -128,6 +124,14 @@ public class BoardView extends View {
 
 	public void setBlocked(boolean blocked) {
 		this.blocked = blocked;
+	}
+
+	public int getClickedX() {
+		return clickedX;
+	}
+
+	public int getClickedY() {
+		return clickedY;
 	}
 
 

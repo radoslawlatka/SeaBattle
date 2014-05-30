@@ -10,6 +10,7 @@ import pl.marzlat.model.ComputerPlayer;
 import pl.marzlat.model.Player;
 import pl.marzlat.model.Ship;
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -27,7 +28,7 @@ public class GameVsAndroidActivity extends Activity {
     public static final int END_GAME = 4;
 
     private Player player1;
-    private Player player2;
+    private ComputerPlayer player2;
     
 	private BoardView boardView;
 	private Button buttonReset;
@@ -85,7 +86,7 @@ public class GameVsAndroidActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				if (shipNumberToPlace == 0)
+				if (shipNumberToPlace == 0 && state == PLACEMENT)
 				{
 					buttonReset.setEnabled(false);
 					buttonAuto.setEnabled(false);
@@ -102,12 +103,61 @@ public class GameVsAndroidActivity extends Activity {
 			}
 		});
 		
+		boardView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				int x = boardView.getClickedX();
+				int y = boardView.getClickedY();
+				String opponentsAnswer;
+				int retval;
+				Log.d("GameVsAndroidClass", x+" "+y);
+				if (x == -1 && y == -1)
+					return;
+				if (boardView.isBlocked() == false)
+				{
+					if (state == PLAYER_1_ROUND)
+					{
+						boardView.setBlocked(true);
+						opponentsAnswer = player2.receiveShot(x, y);
+						Log.d("GameVsAndroidClass", opponentsAnswer);
+						retval = player1.receiveOpponentsAnswer(opponentsAnswer);
+						if (retval == 1 || retval == 0)
+						{
+							state = PLAYER_1_ROUND;
+							boardView.setBoardAndDraw(player1.getOpponentsArea());
+							boardView.setBlocked(false);
+						}
+						else if (retval == 2)
+						{
+							state = END_GAME;
+							boardView.setBoardAndDraw(player1.getOpponentsArea());
+							Toast.makeText(getApplicationContext(), "Wygrana", Toast.LENGTH_LONG).show();
+							boardView.setBlocked(true);
+						}
+						else if (retval == 3)
+						{
+							state = PLAYER_2_ROUND;
+							textCurrPlayer.setText(player2.getName());
+							boardView.setBoardAndDraw(player1.getOpponentsArea());
+							boardView.setBlocked(true);
+							new AndroidPlayerRound().execute();
+						}
+					}
+					else if (state == PLACEMENT)
+					{
+						
+					}
+				}
+			}
+		});
+		
 		Log.d("GameVsAndroid", "Add listeners");
 		
 		state = PLACEMENT;
 		shipNumberToPlace = ships.size();
 		
-		player2 = createAndroidPlayer();
+		player2 = (ComputerPlayer) createAndroidPlayer();
 		Log.d("GameVsAndroid", "Create Android player");
 		
 		//TODO zrobic przycisk reset, zrobic blokowanie planszy
@@ -143,5 +193,88 @@ public class GameVsAndroidActivity extends Activity {
             ships.add(new Ship(Ship.XLARGE));
         }
         return ships;
+    }
+    
+    private class AndroidPlayerRound extends AsyncTask<Void, Void, Void>
+    {
+
+		@Override
+		protected Void doInBackground(Void... arg0) {
+			String opponentsArea;
+			int retval;
+			sleep(500);
+			showPlayerArea();
+			sleep(300);
+			int[] coor = player2.typeCoordinatesOfShot();
+			opponentsArea = player1.receiveShot(coor[0], coor[1]);
+			showPlayerArea();
+			retval = player2.receiveOpponentsAnswer(opponentsArea);
+			sleep(300);
+
+			if (retval == 1 || retval == 0)
+			{
+				state = PLAYER_1_ROUND;
+				showPlayerArea();
+				return doInBackground((Void[]) null);
+			}
+			else if (retval == 2)
+			{
+				state = END_GAME;
+//				boardView.setBoardAndDraw(player1.getOpponentsArea());
+				Toast.makeText(getApplicationContext(), "Wygrana Androida", Toast.LENGTH_LONG).show();
+				boardView.setBlocked(true);
+			}
+			else if (retval == 3)
+			{
+				state = PLAYER_1_ROUND;
+				setCurrentPlayerName();
+				showOpponentsArea();
+				boardView.setBlocked(false);
+			}
+			return null;
+		}
+		
+		private void setCurrentPlayerName()
+		{
+			runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					textCurrPlayer.setText(player1.getName());
+				}
+			});			
+		}
+		
+		private void showPlayerArea()
+		{
+			runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					boardView.setBoardAndDraw(player1.getArea());
+				}
+			});			
+		}
+		
+		private void showOpponentsArea()
+		{
+			runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					boardView.setBoardAndDraw(player1.getOpponentsArea());
+				}
+			});			
+		}
+		
+		private void sleep(long time) {
+			try {
+				Thread.sleep(time);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+		}
+    	
     }
 }

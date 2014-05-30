@@ -28,7 +28,7 @@ public class Board {
 		squares = new ArrayList<Square>();
 		for (i = 0; i < n; i++) {
 			for (j = 0; j < n; j++) {
-				squares.add(new Square(j, i, (j * a) + x, (i * a) + y, a));
+				squares.add(new Square(i, j, (j * a) + x, (i * a) + y, a));
 			}
 		}
 	}

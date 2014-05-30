@@ -241,11 +241,6 @@ public class Player {
         }
     }
     
-    public Board createPlayersBoard(float xBoard, float yBoard, float width)
-    {
-    	return createBoard(xBoard, yBoard, width, area);
-    }
-    
     public void drawOpponentsArea() {
         int i, j;
         System.out.print("  0123456789");
@@ -265,32 +260,6 @@ public class Player {
             }
             System.out.println();
         }
-    }
-
-    public Board createOpponentsBoard(float xBoard, float yBoard, float width)
-    {
-    	return createBoard(xBoard, yBoard, width, opponentsArea);
-    }
-
-    
-    private Board createBoard(float xBoard, float yBoard, float width, Area area)
-    {
-    	int i, j;
-    	Board board = new Board(Area.SIZE, xBoard, yBoard, width);
-//        for (i = 0; i < Area.SIZE; i++) {
-//            for (j = 0; j < Area.SIZE; j++) {
-//                Field field = area.getField(j, i);
-//                if (field.getState() == Field.BUSY)
-//                	board.setSquareColor(j, i, Square.BUSY);
-//                else if (field.getState() == Field.STRUCK)
-//                	board.setSquareColor(j, i, Square.STRUCK);
-//                else if (field.getState() == Field.MISSED)
-//                	board.setSquareColor(j, i, Square.MISSED);
-//                else
-//                	board.setSquareColor(j, i, Square.FREE);
-//            }
-//        }
-    	return board;
     }
 
     public int[] getToSinkShip() {
