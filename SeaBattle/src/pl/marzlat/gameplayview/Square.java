@@ -6,6 +6,12 @@ import android.graphics.Paint;
 
 public class Square {
 
+	public static int MISSED = Color.GRAY;
+	public static int BUSY = Color.BLACK;
+	public static int STRUCK = Color.RED;
+	public static int FREE = Color.WHITE;
+	public static int CLICKED = Color.BLUE;
+	
 	private int row;
 	private int column;
 	private float x;
@@ -22,7 +28,7 @@ public class Square {
 		this.a = a;
 		color = new Paint();
 		border = new Paint();
-		color.setColor(Color.WHITE);
+		color.setColor(FREE);
 		border.setColor(Color.BLACK);
 	}
 
@@ -73,4 +79,5 @@ public class Square {
 		return y + a;
 	}
 
+	
 }

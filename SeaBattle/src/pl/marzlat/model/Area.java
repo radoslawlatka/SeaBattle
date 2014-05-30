@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import android.util.Log;
+
 /**
  * Created by Marzec on 2014-04-20.
  */
@@ -66,6 +68,7 @@ public class Area {
             return null;
 
         ship.removeAllFields();
+        ship.setOrientation(Ship.NOT_PLACED);
         return ship;
     }
 
@@ -73,6 +76,11 @@ public class Area {
         Random r = new Random();
         int i, j;
         int orientation;
+        int exceptionCount = 0;
+        int exceptionMax = 20;
+        
+        removeAllShips();
+        
         for (Ship ship : ships) {
             while (true)
             {
@@ -92,7 +100,13 @@ public class Area {
                 }
                 catch (Exception e)
                 {
-
+                	exceptionCount++;
+                	if (exceptionCount == exceptionMax)
+                	{
+	                	autoPlacement(ships);
+	                	return;
+                	}
+//                	Log.d("Area -auto", "Zakleszczenie");
                 }
             }
         }
@@ -160,5 +174,14 @@ public class Area {
         if (field == null)
             return -1;
         return field.getState();
+    }
+    
+    public void removeAllShips()
+    {
+    	for (Ship s : ships)
+    	{
+    		s.removeAllFields();
+    		s.setOrientation(Ship.NOT_PLACED);
+    	}
     }
 }

@@ -3,6 +3,9 @@ package pl.marzlat.gameplayview;
 import java.util.ArrayList;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.util.Log;
 
 public class Board {
 
@@ -25,7 +28,7 @@ public class Board {
 		squares = new ArrayList<Square>();
 		for (i = 0; i < n; i++) {
 			for (j = 0; j < n; j++) {
-				squares.add(new Square(i, j, (j * a) + x, (i * a) + y, a));
+				squares.add(new Square(j, i, (j * a) + x, (i * a) + y, a));
 			}
 		}
 	}
@@ -48,10 +51,35 @@ public class Board {
 		}
 		return null;
 	}
-
+	
+	public Square getSquare(int x, int y)
+	{
+		return squares.get(x+y*n);
+	}
+	
+	public void setSquareColor(int x, int y, int color)
+	{
+		getSquare(x, y).setColor(new Paint(color));
+		Log.d("setSquareColor", x+" "+y+" "+color);
+	}
+	
 	private boolean clickedSquare(Square s, float x, float y) {
 		if (s.getX() < x && x < s.getXb() && s.getY() < y && y < s.getYb())
 			return true;
 		return false;
 	}
+
+	public float getX() {
+		return x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public float getWidth() {
+		return width;
+	}
+	
+	
 }

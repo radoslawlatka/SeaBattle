@@ -69,8 +69,9 @@ public class FragmentSelectGame extends Fragment {
 			@Override
 			public void onClick(View v) {
 				
-				replaceFragment(new BoardFragment());
-				
+				//replaceFragment(new BoardFragment());
+				Intent intent = new Intent(getActivity().getApplicationContext(), GameVsAndroidActivity.class);
+				startActivity(intent);
 			}
 		});
 		

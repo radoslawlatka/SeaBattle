@@ -1,5 +1,7 @@
 package pl.marzlat.gameplayview;
 
+import pl.marzlat.model.Area;
+import pl.marzlat.model.Field;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -11,9 +13,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-class BoardView extends View {
+public class BoardView extends View {
 
 	private Board mBoard;
+	private boolean blocked = false;
 	Paint p = new Paint();
 	
 	public BoardView(Context context, AttributeSet attrs) {
@@ -49,16 +52,84 @@ class BoardView extends View {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		Log.d("click", event.getX() + " " + event.getY());
-		Square s = mBoard.getSquaresOnPosition(event.getX(), event.getY());
-
-		p.setColor(Color.BLUE);;
-
-		if (s != null)
-			s.setColor(p);
-
+		if (blocked)
+		{
+			
+		}
+		else
+		{
+			Square s = mBoard.getSquaresOnPosition(event.getX(), event.getY());
+			
+			
+			p.setColor(Color.BLUE);
+			p.setARGB(255, 120, 120, 120);
+			if (s != null)
+			{
+				Log.d("click", s.getRow() + " " + s.getColumn() + " " + event.getX() + " " + event.getY());
+				s.setColor(p);
+			}
 		invalidate();
+		}
 		return super.onTouchEvent(event);
 	}
+	
+	public void setBoardAndDraw(Area area)
+	{
+		
+		showAreaOnBoard(area);
+    	int i, j;
+        for (i = 0; i < Area.SIZE; i++) {
+            for (j = 0; j < Area.SIZE; j++) {
+            	Log.d("Colors mBoard", ""+mBoard.getSquare(j, i).getColor().getColor());
+            }
+        }
+		Log.d("BoardView", "setBoardAndDraw: Created new Board");
+		invalidate();
+	}
+
+	private void showAreaOnBoard(Area area)
+    {
+    	int i, j;
+        for (i = 0; i < Area.SIZE; i++) {
+            for (j = 0; j < Area.SIZE; j++) {
+                Field field = area.getField(j, i);
+                Square square = mBoard.getSquare(j, i);
+                if (field.getState() == Field.BUSY)
+                {	
+                	Paint paint = new Paint();
+                	p.setColor(Square.BUSY);
+                	square.setColor(new Paint(p));
+                }
+            	else if (field.getState() == Field.STRUCK)
+            	{
+                	Paint paint = new Paint();
+                	p.setColor(Square.STRUCK);
+                	square.setColor(new Paint(p));
+            	}
+                else if (field.getState() == Field.MISSED)
+                {
+                	Paint paint = new Paint();
+                	p.setColor(Square.MISSED);
+                	square.setColor(new Paint(p));
+                }
+            	else
+            	{
+                	Paint paint = new Paint();
+                	p.setColor(Square.FREE);
+                	square.setColor(new Paint(p));
+            	}
+            }
+        }
+    }
+
+	public boolean isBlocked() {
+		return blocked;
+	}
+
+	public void setBlocked(boolean blocked) {
+		this.blocked = blocked;
+	}
+
+
 
 }
