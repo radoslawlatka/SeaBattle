@@ -113,6 +113,8 @@ public class GameVsAndroidActivity extends Activity {
 		//TODO zrobic przycisk reset, zrobic blokowanie planszy
 		// zrobic zczytywanie z planszy
 		
+		// Lubie placki
+		
 	}
 	
     public Player createAndroidPlayer()
