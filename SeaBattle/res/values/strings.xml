@@ -20,10 +20,13 @@
     <string name="btn_scan">Skanuj</string>
     <string name="btn_create_account">Załóż konto</string>
     <string name="btn_auto_place">Auto</string>
+    <string name="btn_yes">Tak</string>
+    <string name="btn_no">Nie</string>
     <string name="txt_username">Użytkownik</string>
     <string name="txt_password">Hasło</string>
     <string name="btn_done">Gotowe</string>
     <string name="btn_reset">Reset</string>
+    <string name="txt_are_you_sure_exit">Czy jesteś pewien, że chcesz wyjść?</string>
     <string name="txt_confirm_password">Potwierdź hasło</string>
     <string name="txt_login">Logowanie</string>
     <string name="txt_not_logged_in">Nie zalogowano</string>

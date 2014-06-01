@@ -11,6 +11,7 @@ import pl.marzlat.model.Player;
 import pl.marzlat.model.Ship;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -42,8 +43,6 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
 	private List<Ship> ships = createShips();
 	private Area area = new Area();
 
-    private Random r = new Random();
-
     private int shipNumberToPlace;
     private int state = GAME_NOT_STARTED;
 
@@ -64,6 +63,22 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
 		textCurrPlayer.setText(player1.getName());
 		Log.d("GameVsAndroid", "Created player");
 
+		initListeners();
+
+		Log.d("GameVsAndroid", "Add listeners");
+
+		state = PLACEMENT;
+		shipNumberToPlace = ships.size();
+
+		player2 = (ComputerPlayer) createAndroidPlayer();
+		Log.d("GameVsAndroid", "Create Android player");
+
+
+	}
+
+
+
+	private void initListeners() {
 		buttonReset.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -159,20 +174,6 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
 				}
 			}
 		});
-
-		Log.d("GameVsAndroid", "Add listeners");
-
-		state = PLACEMENT;
-		shipNumberToPlace = ships.size();
-
-		player2 = (ComputerPlayer) createAndroidPlayer();
-		Log.d("GameVsAndroid", "Create Android player");
-
-		//TODO zrobic przycisk reset, zrobic blokowanie planszy
-		// zrobic zczytywanie z planszy
-
-		// Lubie placki
-
 	}
 
     
@@ -244,9 +245,33 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
     @Override
     public void onBackPressed()
     {
+    	final Dialog dialog = new Dialog(this);
+    	dialog.setContentView(R.layout.dialog_on_back_pressed);
+    	dialog.setTitle("Wyjœcie");
+    	    	
+    	final Button buttonYes = (Button) dialog.findViewById(R.id.button_yes);
+    	final Button buttonNo = (Button) dialog.findViewById(R.id.button_no);
+    	
+    	dialog.show();
 
-    	super.onBackPressed();
-    }
+    	buttonYes.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+				finish();
+			}
+		});
+    	
+    	buttonNo.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+    	
+	}
     
     private class AndroidPlayerRound extends AsyncTask<Void, Void, Void>
     {

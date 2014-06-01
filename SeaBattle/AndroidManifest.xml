@@ -50,7 +50,7 @@
             android:theme="@android:style/Theme.Dialog" />
         <activity
             android:name="pl.marzlat.GameVsAndroidActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="keyboardHidden|screenSize"
             android:label="@string/title_activity_game_vs_android"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar" />

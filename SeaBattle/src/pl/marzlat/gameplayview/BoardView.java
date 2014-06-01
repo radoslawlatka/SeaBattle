@@ -49,6 +49,7 @@ public class BoardView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		mBoard.draw(canvas);
+		drawPlacementMenu(canvas);
 	}
 
 	@Override
@@ -117,6 +118,18 @@ public class BoardView extends View {
             }
         }
     }
+	
+	public void drawPlacementMenu(Canvas canvas)
+	{
+		float x, y, width, height;
+		x = mBoard.getX();
+		y = mBoard.getY()+mBoard.getWidth()+1;
+		Square s = mBoard.getSquare(0, 0);
+		width = mBoard.getWidth();
+		height = 3*(s.getXb()-s.getX());
+		Paint p = new Paint(Color.WHITE);
+		canvas.drawRect(x, y, x+width, y+height, p);
+	}
 
 	public boolean isBlocked() {
 		return blocked;
