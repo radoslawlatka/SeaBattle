@@ -19,7 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class GameVsAndroidActivity extends Activity {
+public class GameVsAndroidActivity extends Activity implements Gameplay {
 
     public static final int GAME_NOT_STARTED = 0;
     public static final int PLACEMENT = 1;
@@ -29,38 +29,41 @@ public class GameVsAndroidActivity extends Activity {
 
     private Player player1;
     private ComputerPlayer player2;
+    private Gameplay gameplay;
     
 	private BoardView boardView;
 	private Button buttonReset;
 	private Button buttonAuto;
 	private Button buttonDone;
 	private TextView textCurrPlayer;
-	
+
 	private List<Ship> ships = createShips();
 	private Area area = new Area();
-	
+
     private Random r = new Random();
 
     private int shipNumberToPlace;
     private int state = GAME_NOT_STARTED;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game_vs_android);
+
+		gameplay = this;
 		
 		boardView = (BoardView) findViewById(R.id.board_view);
 		buttonReset = (Button) findViewById(R.id.button_reset);
 		buttonAuto = (Button) findViewById(R.id.button_auto);
 		buttonDone = (Button) findViewById(R.id.button_done);
 		textCurrPlayer = (TextView) findViewById(R.id.currentPlayer);
-		
+
 		player1 = new Player("Mariusz", ships, area);
 		textCurrPlayer.setText(player1.getName());
 		Log.d("GameVsAndroid", "Created player");
-		
+
 		buttonReset.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				player1.getArea().removeAllShips();
@@ -69,9 +72,9 @@ public class GameVsAndroidActivity extends Activity {
 				boardView.setBlocked(false);
 			}
 		});
-		
+
 		buttonAuto.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				area.autoPlacement(ships);
@@ -81,9 +84,9 @@ public class GameVsAndroidActivity extends Activity {
 				boardView.setBlocked(true);
 			}
 		});
-		
+
 		buttonDone.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				if (shipNumberToPlace == 0 && state == PLACEMENT)
@@ -102,9 +105,9 @@ public class GameVsAndroidActivity extends Activity {
 				}
 			}
 		});
-		
+
 		boardView.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				int x = boardView.getClickedX();
@@ -119,52 +122,68 @@ public class GameVsAndroidActivity extends Activity {
 					if (state == PLAYER_1_ROUND)
 					{
 						boardView.setBlocked(true);
-						opponentsAnswer = player2.receiveShot(x, y);
-						Log.d("GameVsAndroidClass", opponentsAnswer);
-						retval = player1.receiveOpponentsAnswer(opponentsAnswer);
-						if (retval == 1 || retval == 0)
-						{
-							state = PLAYER_1_ROUND;
-							boardView.setBoardAndDraw(player1.getOpponentsArea());
-							boardView.setBlocked(false);
-						}
-						else if (retval == 2)
-						{
-							state = END_GAME;
-							boardView.setBoardAndDraw(player1.getOpponentsArea());
-							Toast.makeText(getApplicationContext(), "Wygrana", Toast.LENGTH_LONG).show();
-							boardView.setBlocked(true);
-						}
-						else if (retval == 3)
-						{
-							state = PLAYER_2_ROUND;
-							textCurrPlayer.setText(player2.getName());
-							boardView.setBoardAndDraw(player1.getOpponentsArea());
-							boardView.setBlocked(true);
-							new AndroidPlayerRound().execute();
-						}
+						player2.receiveShot(x, y, gameplay);
+						
 					}
 					else if (state == PLACEMENT)
 					{
-						
+
 					}
 				}
 			}
 		});
-		
+
 		Log.d("GameVsAndroid", "Add listeners");
-		
+
 		state = PLACEMENT;
 		shipNumberToPlace = ships.size();
-		
+
 		player2 = (ComputerPlayer) createAndroidPlayer();
 		Log.d("GameVsAndroid", "Create Android player");
-		
+
 		//TODO zrobic przycisk reset, zrobic blokowanie planszy
 		// zrobic zczytywanie z planszy
-		
+
 		// Lubie placki
+
+	}
+
+    
+
+	@Override
+	public void sendQueryToOppenent(int x, int y, Gameplay gameplay) {
+		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void receiveAnswerFromOponent(String opponentsAnswer) {
+		Log.d("GameVsAndroidClass", "####"+opponentsAnswer);
+		int retval;
+
+			if (state == PLAYER_1_ROUND) {
+				
+				retval = player1.receiveOpponentsAnswer(opponentsAnswer);
+				
+				if (retval == 1 || retval == 0) {
+					state = PLAYER_1_ROUND;
+					boardView.setBoardAndDraw(player1.getOpponentsArea());
+					boardView.setBlocked(false);
+				} else if (retval == 2) {
+					state = END_GAME;
+					boardView.setBoardAndDraw(player1.getOpponentsArea());
+					Toast.makeText(getApplicationContext(), "Wygrana",
+							Toast.LENGTH_LONG).show();
+					boardView.setBlocked(true);
+				} else if (retval == 3) {
+					state = PLAYER_2_ROUND;
+					textCurrPlayer.setText(player2.getName());
+					boardView.setBoardAndDraw(player1.getOpponentsArea());
+					boardView.setBlocked(true);
+					new AndroidPlayerRound().execute();
+				}
+			
+		}
 	}
 	
     public Player createAndroidPlayer()
@@ -194,7 +213,7 @@ public class GameVsAndroidActivity extends Activity {
         }
         return ships;
     }
-    
+
     private class AndroidPlayerRound extends AsyncTask<Void, Void, Void>
     {
 
@@ -237,47 +256,47 @@ public class GameVsAndroidActivity extends Activity {
 		private void showWinnersMassage()
 		{
 			runOnUiThread(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					Toast.makeText(getApplicationContext(), "Wygrana Androida", Toast.LENGTH_LONG).show();
 				}
 			});			
 		}
-		
+
 		private void setCurrentPlayerName()
 		{
 			runOnUiThread(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					textCurrPlayer.setText(player1.getName());
 				}
 			});			
 		}
-		
+
 		private void showPlayerArea()
 		{
 			runOnUiThread(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					boardView.setBoardAndDraw(player1.getArea());
 				}
 			});			
 		}
-		
+
 		private void showOpponentsArea()
 		{
 			runOnUiThread(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					boardView.setBoardAndDraw(player1.getOpponentsArea());
 				}
 			});			
 		}
-		
+
 		private void sleep(long time) {
 			try {
 				Thread.sleep(time);
@@ -287,4 +306,5 @@ public class GameVsAndroidActivity extends Activity {
 		}
     	
     }
+
 }

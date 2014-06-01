@@ -3,6 +3,7 @@ package pl.marzlat.model;
 
 import java.util.List;
 
+import pl.marzlat.Gameplay;
 import pl.marzlat.gameplayview.Board;
 import pl.marzlat.gameplayview.Square;
 
@@ -61,6 +62,29 @@ public class Player {
      *  "MISSED.x.y" when this field is empty<br />
      *  "DISCOVERED.x.y" when this field was already discovered
      */
+	public void receiveShot(int x, int y, Gameplay gameplay) {
+		int fieldState = area.getFieldState(x, y);
+		
+		if (fieldState == -1) {
+			gameplay.receiveAnswerFromOponent(DOESNT_EXIST);
+		} else if (fieldState == Field.BUSY) {
+			Ship ship = area.getField(x, y).getShip();
+			int xs = ship.getX();
+			int ys = ship.getY();
+			area.setFieldState(x, y, Field.STRUCK);
+			if (ship.isSunk()) {
+				setMissedAroundSunkShip(area, xs, ys, ship.getSize(),
+						ship.getOrientation());
+			}
+			gameplay.receiveAnswerFromOponent(buildStruckAnswer(x, y));
+		} else if (fieldState == Field.FREE) {
+			area.setFieldState(x, y, Field.MISSED);
+			gameplay.receiveAnswerFromOponent(MISSED + "." + x + "." + y);
+		} else {
+		gameplay.receiveAnswerFromOponent(DISCOVERED + "." + x + "." + y);
+		}
+	}
+
     public String receiveShot(int x, int y)
     {
         int fieldState = area.getFieldState(x, y);
@@ -86,7 +110,7 @@ public class Player {
         }
         return DISCOVERED+"."+x+"."+y;
     }
-
+    
     /**
      * Call only when on field with coordinates (x, y) is there ship
      * @param x
