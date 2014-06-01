@@ -39,6 +39,8 @@
     <string name="toast_invalid_email">Nieprawidłowy adres email</string>
     <string name="toast_bluetooth_not_available">Bluetooth jest niedostępny</string>
     <string name="toast_all_ships_not_placed">Musisz rozłożyć wszystkie statki</string>
+    <string name="toast_android_wins">Android wygrał</string>
+    <string name="toast_winner_is">Wygrał gracz</string>
     <string name="txt_wins">Wygrane</string>
     <string name="txt_losses">Przergane</string>
     <string name="title_activity_game_vs_android">GameVsAndroidActivity</string>

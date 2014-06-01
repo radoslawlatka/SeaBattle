@@ -10,6 +10,8 @@ import pl.marzlat.model.ComputerPlayer;
 import pl.marzlat.model.Player;
 import pl.marzlat.model.Ship;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -122,8 +124,33 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
 					if (state == PLAYER_1_ROUND)
 					{
 						boardView.setBlocked(true);
-						player2.receiveShot(x, y, gameplay);
-						
+
+						opponentsAnswer = player2.receiveShot(x, y);
+						Log.d("GameVsAndroidClass", opponentsAnswer);
+						retval = player1.receiveOpponentsAnswer(opponentsAnswer);
+						if (retval == 1 || retval == 0)
+						{
+							state = PLAYER_1_ROUND;
+							boardView.setBoardAndDraw(player1.getOpponentsArea());
+							boardView.setBlocked(false);
+						}
+						else if (retval == 2)
+						{
+							state = END_GAME;
+							boardView.setBoardAndDraw(player1.getOpponentsArea());
+							Toast.makeText(getApplicationContext(), 
+									R.string.toast_winner_is + " " + player1.getName(),
+									Toast.LENGTH_LONG).show();
+							boardView.setBlocked(true);
+						}
+						else if (retval == 3)
+						{
+							state = PLAYER_2_ROUND;
+							textCurrPlayer.setText(player2.getName());
+							boardView.setBoardAndDraw(player1.getOpponentsArea());
+							boardView.setBlocked(true);
+							new AndroidPlayerRound().execute();
+						}
 					}
 					else if (state == PLACEMENT)
 					{
@@ -214,6 +241,13 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
         return ships;
     }
 
+    @Override
+    public void onBackPressed()
+    {
+
+    	super.onBackPressed();
+    }
+    
     private class AndroidPlayerRound extends AsyncTask<Void, Void, Void>
     {
 
@@ -259,7 +293,7 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
 
 				@Override
 				public void run() {
-					Toast.makeText(getApplicationContext(), "Wygrana Androida", Toast.LENGTH_LONG).show();
+					Toast.makeText(getApplicationContext(), R.string.toast_android_wins, Toast.LENGTH_LONG).show();
 				}
 			});			
 		}
