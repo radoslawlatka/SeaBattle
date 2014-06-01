@@ -84,7 +84,7 @@ public class GameplayFragment extends Fragment implements Gameplay {
 				player1.drawArea();
 				boardView.setBoardAndDraw(player1.getArea());
 				shipNumberToPlace = 0;
-				boardView.setBlocked(true);
+				//boardView.setBlocked(true);
 			}
 		});
 
@@ -115,6 +115,8 @@ public class GameplayFragment extends Fragment implements Gameplay {
 				int y = boardView.getClickedY();
 
 				Log.d("Gameplay", "Click: " + x + " " + y);
+				Log.d("Gameplay", "boardIsBlocked: " + boardView.isBlocked());
+				Log.d("Gameplay", "state: " + state);
 				if (x == -1 && y == -1)
 					return;
 				if (boardView.isBlocked() == false) {
@@ -143,7 +145,7 @@ public class GameplayFragment extends Fragment implements Gameplay {
 	@Override
 	public void sendQueryToOppenent(int x, int y, Gameplay gameplay) {
 		Log.d("Gameplay", "Send query to opponent: " + x + " " + y);
-		boardView.setBlocked(true);
+		//boardView.setBlocked(true);
 
 		boardView.setBoardAndDraw(player1.getOpponentsArea());
 		player2.receiveShot(x, y, gameplay);
@@ -152,88 +154,112 @@ public class GameplayFragment extends Fragment implements Gameplay {
 	@Override
 	public void receiveAnswerFromOpponent(final String opponentsAnswer) {
 		Log.d("Gameplay", "Receive answer from opponent: " + opponentsAnswer);
-		getActivity().runOnUiThread(new Runnable() {
 
-			@Override
-			public void run() {
-				int retval;
+		int retval;
 
-				if (state == PLAYER_1_ROUND) {
-
+		if (state == PLAYER_1_ROUND) {
+			getActivity().runOnUiThread(new Runnable() {
+				public void run() {
 					boardView.setBoardAndDraw(player1.getArea());
-					
-					retval = player1.receiveOpponentsAnswer(opponentsAnswer, gameplay);
-					
-					Log.d("Gameplay", "Retval: " + retval);
-					if (retval == 1 || retval == 0) {
-						state = PLAYER_1_ROUND;
-						boardView.setBoardAndDraw(player1.getArea());
-						boardView.setBlocked(false);
-					} else if (retval == 2) {
-						state = END_GAME;
-						boardView.setBoardAndDraw(player1.getOpponentsArea());
-						Toast.makeText(getActivity().getApplicationContext(),
-								"Wygrana", Toast.LENGTH_LONG).show();
-						boardView.setBlocked(true);
-					} else if (retval == 3) {
-						state = PLAYER_2_ROUND;
-						textCurrPlayer.setText(player2.getName());
-						boardView.setBoardAndDraw(player1.getArea());
-						boardView.setBoardAndDraw(player1.getOpponentsArea());
-						boardView.setBlocked(true);
-						if (player2.getClass() == ComputerPlayer.class)
-							new AndroidPlayerRound().execute();
-					}
+				}});
+			retval = player1.receiveOpponentsAnswer(opponentsAnswer, gameplay);
 
-
-				}
-
+			Log.d("Gameplay", "Retval: " + retval);
+			if (retval == 1 || retval == 0) {
+				state = PLAYER_1_ROUND;
+				showOpponentArea();
+				boardView.setBlocked(false);
+			} else if (retval == 2) {
+				state = END_GAME;
+				
+				showOpponentArea();
+				
+				Toast.makeText(getActivity().getApplicationContext(),
+						"Wygrana", Toast.LENGTH_LONG).show();
+				//boardView.setBlocked(true);
+			} else if (retval == 3) {
+				state = PLAYER_2_ROUND;
+				setPleyerName(player2.getName());
+				showOpponentArea();
+				try { Thread.sleep(2000); } catch (InterruptedException e) { }
+				showPlayerArea();
+				
+				//boardView.setBlocked(true);
+				if (player2.getClass() == ComputerPlayer.class)
+					new AndroidPlayerRound().execute();
 			}
-		});
-		
+
+
+		} else {
+			Log.e("GameplayFragmnt", "Nie twoja kolej kurwa");
+		}
+
 	}
+
+	private void setPleyerName(final String name) {
+		getActivity().runOnUiThread(new Runnable() {
+			public void run() {
+				textCurrPlayer.setText(name);
+			}});
+	}
+
+	private void showPlayerArea() {
+		getActivity().runOnUiThread(new Runnable() {
+			public void run() {
+				boardView.setBoardAndDraw(player1.getArea());
+			}});
+	}
+
+	private void showOpponentArea() {
+		getActivity().runOnUiThread(new Runnable() {
+			public void run() {
+				boardView.setBoardAndDraw(player1.getOpponentsArea());
+			}});
+	}
+
+
+
 
 	@Override
 	public void receiveQueryFromOpponent(final int x, final int y) {
 		Log.d("Gameplay", "Receive query from opponent: " + x + " " + y);
-		getActivity().runOnUiThread(new Runnable() {
 
-			@Override
-			public void run() {
 				
 				String answer = player1.receiveShot(x, y);
 				sendAnswerToOpponent(answer);
 				
-
-				
-				
-
-				
+				showPlayerArea();
 				try {
 					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				showOpponentArea();
 
-			}
-		});
 	}
 
 	@Override
 	public void sendAnswerToOpponent(final String answer) {
 		Log.d("Gameplay", "Send answer to opponent: " + answer);
-		getActivity().runOnUiThread(new Runnable() {
 
-			@Override
-			public void run() {
+				
+				if(answer.contains("MISSED")) {
+					state = PLAYER_1_ROUND;
+					showPlayerArea();
+				} 
+					
 				
 				player2.receiveOpponentsAnswer(answer, gameplay);
 				
 				boardView.setBlocked(false);
-				textCurrPlayer.setText(player1.getName());
-			}
-		});
+				
+				setPleyerName(player1.getName());
+				
+				try { Thread.sleep(500); } catch (InterruptedException e) { }
+				showOpponentArea();
+			
+	
 	}
 	
 	public Player getPlayer1() {
@@ -283,7 +309,7 @@ public class GameplayFragment extends Fragment implements Gameplay {
 				state = END_GAME;
 				
 				showWinnersMassage();
-				boardView.setBlocked(true);
+				//boardView.setBlocked(true);
 			} else if (retval == 3) {
 				state = PLAYER_1_ROUND;
 				setCurrentPlayerName();

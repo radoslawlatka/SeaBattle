@@ -29,6 +29,8 @@ public class WifiServerPlayer extends Player {
 	@Override
 	public void receiveShot(int x, int y, Gameplay gameplay) {
 		this.gameplay = gameplay;
+		Log.d("WifiServPlayer", "Send query to opponent: " + x + " " + y);
+		 
 		cThread.send(x + " " +y);
 		
 		//return str;
@@ -37,6 +39,7 @@ public class WifiServerPlayer extends Player {
 
 	public int receiveOpponentsAnswer(String answer, Gameplay gameplay) {
 		this.gameplay = gameplay;
+		Log.d("WifiServPlayer", "Send answer to opponent: " + answer);
 		cThread.send(answer);
 		return 0;
 	}
