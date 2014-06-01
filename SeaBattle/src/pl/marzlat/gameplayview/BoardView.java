@@ -82,7 +82,7 @@ public class BoardView extends View {
 	{
 		
 		showAreaOnBoard(area);
-		Log.d("BoardView", "setBoardAndDraw: Created new Board");
+		//Log.d("BoardView", "setBoardAndDraw: Created new Board");
 		invalidate();
 	}
 

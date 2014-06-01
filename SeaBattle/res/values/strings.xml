@@ -42,4 +42,6 @@
     <string name="txt_wins">Wygrane</string>
     <string name="txt_losses">Przergane</string>
     <string name="title_activity_game_vs_android">GameVsAndroidActivity</string>
+    <string name="txt_create_game">Utwórz gre</string>
+    <string name="txt_join_game">Dołącz do gry</string>
 </resources>
