@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import pl.marzlat.gameplayview.BoardView;
+import pl.marzlat.gameplayview.PlacementMenu;
 import pl.marzlat.model.Area;
 import pl.marzlat.model.ComputerPlayer;
 import pl.marzlat.model.Player;
@@ -35,6 +36,7 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
     private Gameplay gameplay;
     
 	private BoardView boardView;
+	private PlacementMenu placementMenu;
 	private Button buttonReset;
 	private Button buttonAuto;
 	private Button buttonDone;
@@ -54,9 +56,12 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
 		gameplay = this;
 		
 		boardView = (BoardView) findViewById(R.id.board_view);
+		placementMenu = (PlacementMenu) findViewById(R.id.placement_menu);
+		
 		buttonReset = (Button) findViewById(R.id.button_reset);
 		buttonAuto = (Button) findViewById(R.id.button_auto);
 		buttonDone = (Button) findViewById(R.id.button_done);
+		
 		textCurrPlayer = (TextView) findViewById(R.id.currentPlayer);
 
 		player1 = new Player("Mariusz", ships, area);
@@ -72,8 +77,6 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
 
 		player2 = (ComputerPlayer) createAndroidPlayer();
 		Log.d("GameVsAndroid", "Create Android player");
-
-
 	}
 
 

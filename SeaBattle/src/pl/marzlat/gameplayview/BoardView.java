@@ -48,7 +48,7 @@ public class BoardView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		mBoard.draw(canvas);
+		//mBoard.draw(canvas);
 	}
 
 	@Override
