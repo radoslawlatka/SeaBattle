@@ -158,30 +158,34 @@ public class GameplayFragment extends Fragment implements Gameplay {
 		int retval;
 
 		if (state == PLAYER_1_ROUND) {
-			getActivity().runOnUiThread(new Runnable() {
-				public void run() {
-					boardView.setBoardAndDraw(player1.getArea());
-				}});
+			Log.d("showPlayerArea", "1");
+			showPlayerArea();
+			
 			retval = player1.receiveOpponentsAnswer(opponentsAnswer, gameplay);
 
 			Log.d("Gameplay", "Retval: " + retval);
 			if (retval == 1 || retval == 0) {
 				state = PLAYER_1_ROUND;
+				Log.d("showOpponentArea", "1");
 				showOpponentArea();
 				boardView.setBlocked(false);
 			} else if (retval == 2) {
 				state = END_GAME;
-				
+
+				Log.d("showOpponentArea", "2");
 				showOpponentArea();
 				
-				Toast.makeText(getActivity().getApplicationContext(),
-						"Wygrana", Toast.LENGTH_LONG).show();
+				showToast("Wygrana!");
 				//boardView.setBlocked(true);
 			} else if (retval == 3) {
 				state = PLAYER_2_ROUND;
-				setPleyerName(player2.getName());
+
+				Log.d("showOpponentArea", "3");
 				showOpponentArea();
-				try { Thread.sleep(2000); } catch (InterruptedException e) { }
+				try { Thread.sleep(1500); } catch (InterruptedException e) { }
+
+				setPleyerName(player2.getName());
+				Log.d("showPlayerArea", "2");
 				showPlayerArea();
 				
 				//boardView.setBlocked(true);
@@ -196,6 +200,60 @@ public class GameplayFragment extends Fragment implements Gameplay {
 
 	}
 
+
+	
+	@Override
+	public void receiveQueryFromOpponent(final int x, final int y) {
+		Log.d("Gameplay", "Receive query from opponent: " + x + " " + y);
+
+				
+				String answer = player1.receiveShot(x, y);
+				sendAnswerToOpponent(answer);
+
+				//Log.d("showPlayerArea", "3");
+				//showPlayerArea();
+				try { Thread.sleep(500); } catch (InterruptedException e) { }
+
+				//Log.d("showOpponentArea", "4");
+				//showOpponentArea(); za chuj nie moze byc tutaj
+
+	}
+
+	@Override
+	public void sendAnswerToOpponent(final String answer) {
+		Log.d("Gameplay", "Send answer to opponent: " + answer);
+
+		player2.receiveOpponentsAnswer(answer, gameplay);
+		
+		Log.e("Gameplay", "############");
+				if(answer.contains("MISSED")) {
+					state = PLAYER_1_ROUND;
+					showPlayerArea();
+					try { Thread.sleep(500); } catch (InterruptedException e) { }
+					setPleyerName(player1.getName());
+
+					Log.d("showOpponentArea", "5");
+					showOpponentArea();
+				} else if (answer.contains("STRUCK")) {
+					state = PLAYER_2_ROUND;
+
+					Log.d("showPlayerArea", "4");
+					showPlayerArea();
+					Log.e("Gameplay", "############");
+				}
+					
+				
+				
+				
+				boardView.setBlocked(false);
+				
+				
+				
+				try { Thread.sleep(500); } catch (InterruptedException e) { }
+				//showOpponentArea();
+
+	}
+	
 	private void setPleyerName(final String name) {
 		getActivity().runOnUiThread(new Runnable() {
 			public void run() {
@@ -203,6 +261,15 @@ public class GameplayFragment extends Fragment implements Gameplay {
 			}});
 	}
 
+
+	private void showToast(final String text) {
+		getActivity().runOnUiThread(new Runnable() {
+			public void run() {
+				Toast.makeText(getActivity().getApplicationContext(),
+						text, Toast.LENGTH_LONG).show();
+			}});
+	}
+	
 	private void showPlayerArea() {
 		getActivity().runOnUiThread(new Runnable() {
 			public void run() {
@@ -215,51 +282,6 @@ public class GameplayFragment extends Fragment implements Gameplay {
 			public void run() {
 				boardView.setBoardAndDraw(player1.getOpponentsArea());
 			}});
-	}
-
-
-
-
-	@Override
-	public void receiveQueryFromOpponent(final int x, final int y) {
-		Log.d("Gameplay", "Receive query from opponent: " + x + " " + y);
-
-				
-				String answer = player1.receiveShot(x, y);
-				sendAnswerToOpponent(answer);
-				
-				showPlayerArea();
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				showOpponentArea();
-
-	}
-
-	@Override
-	public void sendAnswerToOpponent(final String answer) {
-		Log.d("Gameplay", "Send answer to opponent: " + answer);
-
-				
-				if(answer.contains("MISSED")) {
-					state = PLAYER_1_ROUND;
-					showPlayerArea();
-				} 
-					
-				
-				player2.receiveOpponentsAnswer(answer, gameplay);
-				
-				boardView.setBlocked(false);
-				
-				setPleyerName(player1.getName());
-				
-				try { Thread.sleep(500); } catch (InterruptedException e) { }
-				showOpponentArea();
-			
-	
 	}
 	
 	public Player getPlayer1() {

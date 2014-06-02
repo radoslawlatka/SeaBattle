@@ -29,9 +29,21 @@ public class WifiClientPlayer extends Player {
 	@Override
 	public void receiveShot(int x, int y, Gameplay gameplay) {
 		this.gameplay = gameplay;
+		Log.d("WifiServPlayer", "Send query to opponent: " + x + " " + y);
+		 
 		cThread.send(x + " " +y);
 		
 		//return str;
+	}
+	
+	@Override
+	public int receiveOpponentsAnswer(String answer, Gameplay gameplay) {
+		this.gameplay = gameplay;
+		Log.d("WifiServPlayer", "Send answer to opponent: " + answer);
+		cThread.send(answer);
+
+		Log.d("WifiServPlayer", "Answer send: " + answer);
+		return 0;
 	}
 	
 	
@@ -60,14 +72,18 @@ public class WifiClientPlayer extends Player {
 				input = new BufferedReader(new InputStreamReader(
 						socket.getInputStream()));
 
-				output.print("Connected!\n");
-				output.flush();
 
 				while ((string = input.readLine()) != null) {
 
-					Log.e("ConnTread", "Odebrano: " + string);
-					if(string.charAt(0)=='S')
-					returnAnswer(string);
+
+					if(string.length() == 3) {
+						Log.e("ConnTread", "Received query: " + string);
+						returnQuery(string);
+					}
+					else {
+						Log.e("ConnTread", "Received answer: " + string);
+						returnAnswer(string);
+					}
 
 				}
 
@@ -91,7 +107,14 @@ public class WifiClientPlayer extends Player {
 				output.flush();
 			}
 		}
-
+		
+		private void returnQuery(String query) {
+			Log.d("ConnThread", "returnQuery: " + query);
+			gameplay.receiveQueryFromOpponent(Integer.valueOf(String.valueOf(query.charAt(0))),
+												Integer.valueOf(String.valueOf(query.charAt(2))));
+		
+		}
+		
 		private void returnAnswer(String answer) {
 			gameplay.receiveAnswerFromOpponent(answer);
 		}
