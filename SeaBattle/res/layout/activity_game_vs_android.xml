@@ -45,15 +45,10 @@
             android:text="" />
 
     </LinearLayout>
-    
+        
     <pl.marzlat.gameplayview.BoardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/board_view" />
     
-    <pl.marzlat.gameplayview.PlacementMenu
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/placement_menu" />
-
 </LinearLayout>

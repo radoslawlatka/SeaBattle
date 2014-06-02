@@ -8,8 +8,10 @@ import pl.marzlat.gameplayview.BoardView;
 import pl.marzlat.gameplayview.PlacementMenu;
 import pl.marzlat.model.Area;
 import pl.marzlat.model.ComputerPlayer;
+import pl.marzlat.model.InappropriateLocationException;
 import pl.marzlat.model.Player;
 import pl.marzlat.model.Ship;
+import pl.marzlat.model.ShipsAdjoinException;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -36,7 +38,6 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
     private Gameplay gameplay;
     
 	private BoardView boardView;
-	private PlacementMenu placementMenu;
 	private Button buttonReset;
 	private Button buttonAuto;
 	private Button buttonDone;
@@ -56,7 +57,6 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
 		gameplay = this;
 		
 		boardView = (BoardView) findViewById(R.id.board_view);
-		placementMenu = (PlacementMenu) findViewById(R.id.placement_menu);
 		
 		buttonReset = (Button) findViewById(R.id.button_reset);
 		buttonAuto = (Button) findViewById(R.id.button_auto);
@@ -172,7 +172,22 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
 					}
 					else if (state == PLACEMENT)
 					{
-
+						if (shipNumberToPlace > 0)
+						{
+							try {
+								area.placeShip(ships.get(shipNumberToPlace-1), boardView.getShipOrientation(), x, y);
+								boardView.setBoardAndDraw(area);
+								shipNumberToPlace--;
+								if (shipNumberToPlace > 0)
+									boardView.setCurrentShip(ships.get(shipNumberToPlace-1));
+								else
+									boardView.setCurrentShip(null);
+							} catch (InappropriateLocationException e) {
+								Toast.makeText(getApplicationContext(), "Niepoprawna lokalizacja statku", Toast.LENGTH_SHORT).show();
+							} catch (ShipsAdjoinException e) {
+								Toast.makeText(getApplicationContext(), "Statek nie mo¿e byæ tak blisko innego statku", Toast.LENGTH_SHORT).show();
+							}
+						}
 					}
 				}
 			}

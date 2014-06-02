@@ -2,6 +2,7 @@ package pl.marzlat.gameplayview;
 
 import pl.marzlat.model.Area;
 import pl.marzlat.model.Field;
+import pl.marzlat.model.Ship;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -16,10 +17,12 @@ import android.view.View;
 public class BoardView extends View {
 
 	private Board mBoard;
+	private PlacementMenu menu;
 	private boolean blocked = false;
+	private boolean drawPlacementMenuDrawing = true;
 	private int clickedX = -1;
 	private int clickedY = -1;
-	
+		
 	public BoardView(Context context, AttributeSet attrs) {
 	    super(context, attrs);
 	    init(context);
@@ -37,18 +40,20 @@ public class BoardView extends View {
 	private void init(Context context) {
 		DisplayMetrics displaymetrics = new DisplayMetrics();
 		((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-		int width = displaymetrics.widthPixels;
+		float boardWidth = displaymetrics.widthPixels-20;
 
 		this.setBackgroundColor(Color.TRANSPARENT);
 
-		mBoard = new Board(10, 10, 10, width - 20);
-		Log.d("CanvasView.CanvasView", "width = " + width);
-		
+		mBoard = new Board(10, 10, 10, boardWidth);
+		menu = new PlacementMenu(10, mBoard.getY()+mBoard.getWidth(), boardWidth, 3f/10*(boardWidth));
+		Log.d("BoardView.init", "width = " + getWidth() + " height = " + getHeight());
+		Log.d("BoardView.init", "x = " + getX() + "y = " + getY());
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		//mBoard.draw(canvas);
+		mBoard.draw(canvas);
+		menu.draw(canvas);
 	}
 
 	@Override
@@ -117,7 +122,18 @@ public class BoardView extends View {
             }
         }
     }
+	
+	public void setCurrentShip(Ship ship)
+	{
+		menu.setShipOnMenu(ship);
+		invalidate();
+	}
 
+	public int getShipOrientation()
+	{
+		return menu.getCurrentOrientation();
+	}
+	
 	public boolean isBlocked() {
 		return blocked;
 	}
@@ -132,6 +148,14 @@ public class BoardView extends View {
 
 	public int getClickedY() {
 		return clickedY;
+	}
+
+	public boolean isDrawPlacementMenuDrawing() {
+		return drawPlacementMenuDrawing;
+	}
+
+	public void setDrawPlacementMenuDrawing(boolean drawPlacementMenuDrawing) {
+		this.drawPlacementMenuDrawing = drawPlacementMenuDrawing;
 	}
 
 

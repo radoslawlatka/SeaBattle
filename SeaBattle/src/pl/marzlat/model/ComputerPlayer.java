@@ -117,7 +117,7 @@ public class ComputerPlayer extends Player {
         int x2 = hitedShip.get(1)[0];
         if (x1 == x2)
             return Ship.VERTICAL;
-        return Ship.LANDSCAPE;
+        return Ship.HORIZONTAL;
     }
 
     private int[] randomAroundPoint(int x, int y) {

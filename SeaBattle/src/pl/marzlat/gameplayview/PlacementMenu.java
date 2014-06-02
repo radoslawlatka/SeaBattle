@@ -1,54 +1,133 @@
 package pl.marzlat.gameplayview;
 
-import android.app.Activity;
-import android.content.Context;
+import java.util.ArrayList;
+
+import pl.marzlat.model.Ship;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
 
-public class PlacementMenu extends View {
+public class PlacementMenu {
 
-	private int width;
-	private int height;
+	private float width;
+	private float height;
 	private float x;
 	private float y;
-	Paint p = new Paint(Color.WHITE);
+	private Paint color = new Paint();
+	private Paint border = new Paint();
 	
-	public PlacementMenu(Context context, AttributeSet attrs) {
-	    super(context, attrs);
-	    init(context);
+	private ArrayList<Square> squares = new ArrayList<>();
+	private float xs;
+	private float ys;
+	
+	private float horizontalOptionX;
+	private float horizontalOptionY;
+	private float horiznotalOptionXb;
+	private float horizontalOptionYb;
+	
+	private float verticalOptionX;
+	private float verticalOptionY;
+	private float verticalOptionXb;
+	private float verticalOptionYb;
+	
+	private int currentOrientation = Ship.HORIZONTAL;
+	
+	public PlacementMenu(float x, float y, float width, float height) {
+		this.width = width;
+		this.height = height;
+		this.x = x;
+		this.y = y;
+		color.setColor(Color.WHITE);
+		border.setColor(Color.BLACK);
+		xs = x + 5.5f/10f*width;
+		ys = y + 1/3f*height;
+		setShipOnMenu(new Ship(4));
+		
+		verticalOptionX = x + 2/10f * width;
+		verticalOptionY = y + 1/3f * height;
+		verticalOptionXb = verticalOptionX+1/20f*width;
+		verticalOptionYb = verticalOptionY+3/6f*height;
+		
+		horizontalOptionX = x + 3.5f/10f * width;
+		horizontalOptionY = y + 1/3f * height;
+		horiznotalOptionXb = horizontalOptionX+1.5f/10f*width;
+		horizontalOptionYb = horizontalOptionY+1/6f*height;
 	}
 
-	public PlacementMenu(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-	    init(context);
-	}
-	public PlacementMenu(Context context) {
-		super(context);
-		init(context);
-	}
-	
-	private void init(Context context) {
-		DisplayMetrics displaymetrics = new DisplayMetrics();
-		((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-		width = displaymetrics.widthPixels;
-		x = 0;
-		y = 0;
-		height = (int) (3*width/10f);
-		this.setBackgroundColor(Color.WHITE);
-		Log.d("PlacementMenu.init", "width = " + width + " height = " + height);
-
-		Log.d("PlacementMenu.init", "x = " + getX() + " height = " + getY());
-}
-	
-	@Override
-	public void onDraw(Canvas canvas)
+	public void draw(Canvas canvas)
 	{
-		canvas.drawRect(x, y, x+width, y+height, p);
+		float borderWidth = (float) Math.ceil(0.01f * 1/10*width);
+		canvas.drawRect(x, y, x+width, y+height, border);
+		canvas.drawRect(x + borderWidth, y + borderWidth, x + width - borderWidth, y
+				+ height - borderWidth, color);
+		drawShip(canvas);
+		
+		drawHorizontalOption(canvas);
+
+		drawVerticalOption(canvas);
+		
+	}
+
+	private void drawVerticalOption(Canvas canvas) {
+		Paint paint = new Paint();
+		if (currentOrientation == Ship.VERTICAL)
+		{
+			paint.setColor(Color.GRAY);
+		}
+		else
+		{
+			paint.setColor(Color.BLACK);			
+		}
+		canvas.drawRect(verticalOptionX, verticalOptionY, verticalOptionXb,
+				verticalOptionYb, paint);
+	}
+
+	private void drawHorizontalOption(Canvas canvas) {
+		Paint paint = new Paint();
+		if (currentOrientation == Ship.HORIZONTAL)
+		{
+			paint.setColor(Color.GRAY);
+		}
+		else
+		{
+			paint.setColor(Color.BLACK);			
+		}
+		canvas.drawRect(horizontalOptionX, horizontalOptionY, horiznotalOptionXb,
+				horizontalOptionYb, paint);
+	}
+
+	private void drawShip(Canvas canvas) {
+		for (Square s : squares)
+		{
+			Paint p = new Paint();
+			p.setColor(Square.STRUCK);
+			s.setColor(p);
+			s.draw(canvas);
+		}
+	}
+	
+	public void setShipOnMenu(Ship ship)
+	{
+		int n;
+		if (ship == null)
+			n = 0;
+		else
+		n = ship.getSize();
+		float a = 1/10f*width;
+		int i;
+		squares = new ArrayList<Square>();
+		for (i = 0; i < n; i++) {
+				squares.add(new Square(0, i, xs+(i*a), ys, a));
+		}
+	}
+	
+	public void removeShipFromMenu()
+	{
+		squares.clear();
+	}
+
+	public int getCurrentOrientation() {
+		return currentOrientation;
 	}
 	
 }

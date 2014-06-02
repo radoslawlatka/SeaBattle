@@ -27,7 +27,7 @@ public class Area {
     public void placeShip(Ship ship, int orientation, int x, int y) throws InappropriateLocationException, ShipsAdjoinException {
         int lastX, lastY;
         int i, j;
-        if (orientation == Ship.LANDSCAPE)
+        if (orientation == Ship.HORIZONTAL)
         {
             lastX = x + ship.getSize() - 1;
             lastY = y;
@@ -91,7 +91,7 @@ public class Area {
                     i = r.nextInt(SIZE);
                     j = r.nextInt(SIZE);
                     if (orientation == 0)
-                        orientation = Ship.LANDSCAPE;
+                        orientation = Ship.HORIZONTAL;
                     else
                         orientation = Ship.VERTICAL;
 

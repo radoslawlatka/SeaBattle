@@ -203,7 +203,7 @@ public class Player {
 
     private void setMissedAroundSunkShip(Area area, int x, int y, int size, int orientation) {
         int i, j, lastX, lastY;
-        if (orientation == Ship.LANDSCAPE)
+        if (orientation == Ship.HORIZONTAL)
         {
             lastX = x + size;
             lastY = y + 1;

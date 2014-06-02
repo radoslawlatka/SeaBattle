@@ -33,10 +33,10 @@ public class Square {
 	}
 
 	public void draw(Canvas c) {
-		float borderWeight = (float) Math.ceil(0.01f * a);
+		float borderWidth = (float) Math.ceil(0.01f * a);
 		c.drawRect(x, y, x + a, y + a, border);
-		c.drawRect(x + borderWeight, y + borderWeight, x + a - borderWeight, y
-				+ a - borderWeight, color);
+		c.drawRect(x + borderWidth, y + borderWidth, x + a - borderWidth, y
+				+ a - borderWidth, color);
 	}
 
 	public int getRow() {

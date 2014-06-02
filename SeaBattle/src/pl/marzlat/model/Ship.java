@@ -14,7 +14,7 @@ public class Ship {
     public static final int LARGE = 3;
     public static final int XLARGE = 4;
 
-    public static int LANDSCAPE = 10;
+    public static int HORIZONTAL = 10;
     public static int VERTICAL = 11;
     public static int NOT_PLACED = 12;
 
