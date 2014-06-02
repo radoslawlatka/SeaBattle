@@ -16,6 +16,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -89,16 +91,18 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
 				player1.getArea().removeAllShips();
 				boardView.setBoardAndDraw(player1.getArea());
 				shipNumberToPlace = ships.size();
+				boardView.setCurrentShip(ships.get(shipNumberToPlace-1));
 				boardView.setBlocked(false);
 			}
 		});
-
+		
 		buttonAuto.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				area.autoPlacement(ships);
 				player1.drawArea();
+				boardView.setCurrentShip(null);
 				boardView.setBoardAndDraw(player1.getArea());
 				shipNumberToPlace = 0;
 				boardView.setBlocked(true);
@@ -116,6 +120,7 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
 					buttonDone.setEnabled(false);
 					boardView.setBoardAndDraw(player1.getOpponentsArea());
 					boardView.setBlocked(false);
+					boardView.setPlacementMenuDrawing(false);
 					state = PLAYER_1_ROUND;
 				}
 				else
@@ -135,8 +140,20 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
 				String opponentsAnswer;
 				int retval;
 				Log.d("GameVsAndroidClass", x+" "+y);
-				if (x == -1 && y == -1)
+				if (x == -1 && y == -1 && !boardView.isEraseModeClicked())
 					return;
+				else if (boardView.isEraseModeClicked())
+				{
+					if (boardView.isEraseMode())
+					{
+						boardView.setEraseMode(false);
+					}
+					else
+					{
+						boardView.setEraseMode(true);
+					}
+					return;
+				}
 				if (boardView.isBlocked() == false)
 				{
 					if (state == PLAYER_1_ROUND)
@@ -174,20 +191,30 @@ public class GameVsAndroidActivity extends Activity implements Gameplay {
 					{
 						if (shipNumberToPlace > 0)
 						{
-							try {
-								area.placeShip(ships.get(shipNumberToPlace-1), boardView.getShipOrientation(), x, y);
-								boardView.setBoardAndDraw(area);
-								shipNumberToPlace--;
-								if (shipNumberToPlace > 0)
-									boardView.setCurrentShip(ships.get(shipNumberToPlace-1));
-								else
-									boardView.setCurrentShip(null);
-							} catch (InappropriateLocationException e) {
-								Toast.makeText(getApplicationContext(), "Niepoprawna lokalizacja statku", Toast.LENGTH_SHORT).show();
-							} catch (ShipsAdjoinException e) {
-								Toast.makeText(getApplicationContext(), "Statek nie mo¿e byæ tak blisko innego statku", Toast.LENGTH_SHORT).show();
+							if (!boardView.isEraseMode())
+							{
+								try {
+									area.placeShip(ships.get(shipNumberToPlace-1), boardView.getShipOrientation(), x, y);
+									boardView.setBoardAndDraw(area);
+									shipNumberToPlace--;
+									if (shipNumberToPlace > 0)
+										boardView.setCurrentShip(ships.get(shipNumberToPlace-1));
+									else
+										boardView.setCurrentShip(null);
+								} catch (InappropriateLocationException e) {
+									Toast.makeText(getApplicationContext(), getString(R.string.toast_Inappropriate_location), Toast.LENGTH_SHORT).show();
+								} catch (ShipsAdjoinException e) {
+									Toast.makeText(getApplicationContext(), getString(R.string.toast_too_near_from_another_ship), Toast.LENGTH_SHORT).show();
+								}								
 							}
-						}
+							else if (boardView.isEraseMode())
+							{
+								//TODO usuwanie tak zeby mialo rece i nogi
+								Log.d("Gra", "usuwanie statku");
+								area.removeShipFromArea(x, y);
+								boardView.setBoardAndDraw(area);
+							}
+						}				
 					}
 				}
 			}

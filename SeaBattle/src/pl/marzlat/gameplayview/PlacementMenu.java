@@ -32,6 +32,13 @@ public class PlacementMenu {
 	
 	private int currentOrientation = Ship.HORIZONTAL;
 	
+	private float removeOptionX;
+	private float removeOptionY;
+	private float removeOptionXb;
+	private float removeOptionYb;
+	
+	private boolean eraseMode = false;
+	
 	public PlacementMenu(float x, float y, float width, float height) {
 		this.width = width;
 		this.height = height;
@@ -52,6 +59,11 @@ public class PlacementMenu {
 		horizontalOptionY = y + 1/3f * height;
 		horiznotalOptionXb = horizontalOptionX+1.5f/10f*width;
 		horizontalOptionYb = horizontalOptionY+1/6f*height;
+		
+		removeOptionX = x+1/20f*width;
+		removeOptionY = y+1/3f*height;
+		removeOptionXb = x+3/20f*width;
+		removeOptionYb = y+2/3f*height;
 	}
 
 	public void draw(Canvas canvas)
@@ -61,11 +73,27 @@ public class PlacementMenu {
 		canvas.drawRect(x + borderWidth, y + borderWidth, x + width - borderWidth, y
 				+ height - borderWidth, color);
 		drawShip(canvas);
-		
 		drawHorizontalOption(canvas);
-
 		drawVerticalOption(canvas);
-		
+		drawEraseOption(canvas);
+	}
+
+	private void drawEraseOption(Canvas canvas) {
+		Paint p = new Paint();
+		Paint border = new Paint();
+		p.setStrokeWidth((float) Math.ceil(0.01f * 4/10*width));
+		p.setColor(Color.RED);
+		canvas.drawLine(removeOptionX, removeOptionY, removeOptionXb, removeOptionYb, p);
+		canvas.drawLine(removeOptionX, removeOptionYb, removeOptionXb, removeOptionY, p);
+		if (isEraseMode())
+		{
+			border.setColor(Color.BLACK);
+			border.setStrokeWidth((float) Math.ceil(0.01f * 4/10*width));
+			canvas.drawLine(removeOptionX, removeOptionY, removeOptionXb, removeOptionY, border);
+			canvas.drawLine(removeOptionX, removeOptionYb, removeOptionXb, removeOptionYb, border);
+			canvas.drawLine(removeOptionX, removeOptionY, removeOptionX, removeOptionYb, border);
+			canvas.drawLine(removeOptionXb, removeOptionYb, removeOptionXb, removeOptionY, border);
+		}
 	}
 
 	private void drawVerticalOption(Canvas canvas) {
@@ -121,6 +149,35 @@ public class PlacementMenu {
 		}
 	}
 	
+	public boolean clickOnHorizontal(float x, float y)
+	{
+		if (horizontalOptionX < x && x < horiznotalOptionXb && horizontalOptionY < y && y < horizontalOptionYb)
+		{
+			currentOrientation = Ship.HORIZONTAL;
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean clickOnVertical(float x, float y)
+	{
+		if (verticalOptionX < x && x < verticalOptionXb && verticalOptionY < y && y < verticalOptionYb)
+		{
+			currentOrientation = Ship.VERTICAL;
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean clickOnEraseOption(float x, float y)
+	{
+		if (removeOptionX < x && x < removeOptionXb && removeOptionY < y && y < removeOptionYb)
+		{
+			return true;
+		}		
+		return false;
+	}
+	
 	public void removeShipFromMenu()
 	{
 		squares.clear();
@@ -129,5 +186,18 @@ public class PlacementMenu {
 	public int getCurrentOrientation() {
 		return currentOrientation;
 	}
+
+	public void setCurrentOrientation(int currentOrientation) {
+		this.currentOrientation = currentOrientation;
+	}
+
+	public boolean isEraseMode() {
+		return eraseMode;
+	}
+
+	public void setEraseMode(boolean eraseMode) {
+		this.eraseMode = eraseMode;
+	}
+	
 	
 }

@@ -19,9 +19,10 @@ public class BoardView extends View {
 	private Board mBoard;
 	private PlacementMenu menu;
 	private boolean blocked = false;
-	private boolean drawPlacementMenuDrawing = true;
+	private boolean placementMenuDrawing = true;
 	private int clickedX = -1;
 	private int clickedY = -1;
+	private boolean eraseModeClicked = false;
 		
 	public BoardView(Context context, AttributeSet attrs) {
 	    super(context, attrs);
@@ -53,7 +54,8 @@ public class BoardView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		mBoard.draw(canvas);
-		menu.draw(canvas);
+		if (isPlacementMenuDrawing())
+			menu.draw(canvas);
 	}
 
 	@Override
@@ -64,9 +66,12 @@ public class BoardView extends View {
 		}
 		else
 		{
+			eraseModeClicked = menu.clickOnEraseOption(event.getX(), event.getY());
+			Log.d("BoardView.eraseModeClicked ", eraseModeClicked+"");
+			
 			Square s = mBoard.getSquaresOnPosition(event.getX(), event.getY());
 			
-			if (s != null && s.getColor().getColor() == Square.FREE)
+			if (s != null && (isEraseMode() || s.getColor().getColor() == Square.FREE))
 			{
 				clickedX = s.getColumn();
 				clickedY = s.getRow();
@@ -76,8 +81,18 @@ public class BoardView extends View {
 			{
 				clickedX = -1;
 				clickedY = -1;
+				if (isPlacementMenuDrawing())
+				{
+					if (menu.clickOnHorizontal(event.getX(), event.getY()))
+					{
+						Log.d("BoardView", "New orientation - horizontal");
+					}
+					else if (menu.clickOnVertical(event.getX(), event.getY()))
+					{
+						Log.d("BoardView", "New orientation - vertical");					
+					}
+				}
 			}
-
 			invalidate();
 		}
 		return super.onTouchEvent(event);
@@ -150,14 +165,31 @@ public class BoardView extends View {
 		return clickedY;
 	}
 
-	public boolean isDrawPlacementMenuDrawing() {
-		return drawPlacementMenuDrawing;
+	public boolean isPlacementMenuDrawing() {
+		return placementMenuDrawing;
 	}
 
-	public void setDrawPlacementMenuDrawing(boolean drawPlacementMenuDrawing) {
-		this.drawPlacementMenuDrawing = drawPlacementMenuDrawing;
+	public void setPlacementMenuDrawing(boolean placementMenuDrawing) {
+		this.placementMenuDrawing = placementMenuDrawing;
 	}
 
+	public boolean isEraseModeClicked() {
+		return eraseModeClicked;
+	}
 
+	public void setEraseModeClicked(boolean eraseModeClicked) {
+		this.eraseModeClicked = eraseModeClicked;
+	}
+
+	public boolean isEraseMode() {
+		return menu.isEraseMode();
+	}
+
+	public void setEraseMode(boolean eraseMode) {
+		menu.setEraseMode(eraseMode);
+		invalidate();
+	}
+	
+	
 
 }
