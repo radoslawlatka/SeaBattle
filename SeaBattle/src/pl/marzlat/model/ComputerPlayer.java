@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import pl.marzlat.Gameplay;
+import android.util.Log;
+
 /**
  * Created by Marzec on 2014-05-07.
  */
@@ -158,8 +161,9 @@ public class ComputerPlayer extends Player {
     }
 
     @Override
-    public int receiveOpponentsAnswer(String answer) {
-        int result = super.receiveOpponentsAnswer(answer);
+    public int receiveOpponentsAnswer(String answer, Gameplay gameplay) {
+    	Log.d("ComputerPlayer", "Opponent answer: " + answer);
+        int result = super.receiveOpponentsAnswer(answer, gameplay);
         if (result == 0)
         {
             huntForShip = false;

@@ -12,16 +12,16 @@ import pl.marzlat.gameplayview.Square;
  */
 public class Player {
 
-    private static String DOESNT_EXIST = "DOESNT_EXIST";
-    private static String MISSED = "MISSED";
-    private static String DISCOVERED = "DISCOVERED";
+    protected static String DOESNT_EXIST = "DOESNT_EXIST";
+    protected static String MISSED = "MISSED";
+    protected static String DISCOVERED = "DISCOVERED";
     private static String STRUCK = "STRUCK";
     private static String SUNK = "SUNK";
     private static String LOSE = "LOSE";
     private static String NOT_SUNK = "NOT_SUNK";
 
     private String name;
-    private Area area;
+    protected Area area;
     private List<Ship> ships;
     private int[] toSinkShip = new int[4];
 
@@ -66,7 +66,7 @@ public class Player {
 		int fieldState = area.getFieldState(x, y);
 		
 		if (fieldState == -1) {
-			gameplay.receiveAnswerFromOponent(DOESNT_EXIST);
+			gameplay.receiveAnswerFromOpponent(DOESNT_EXIST);
 		} else if (fieldState == Field.BUSY) {
 			Ship ship = area.getField(x, y).getShip();
 			int xs = ship.getX();
@@ -76,12 +76,12 @@ public class Player {
 				setMissedAroundSunkShip(area, xs, ys, ship.getSize(),
 						ship.getOrientation());
 			}
-			gameplay.receiveAnswerFromOponent(buildStruckAnswer(x, y));
+			gameplay.receiveAnswerFromOpponent(buildStruckAnswer(x, y));
 		} else if (fieldState == Field.FREE) {
 			area.setFieldState(x, y, Field.MISSED);
-			gameplay.receiveAnswerFromOponent(MISSED + "." + x + "." + y);
+			gameplay.receiveAnswerFromOpponent(MISSED + "." + x + "." + y);
 		} else {
-		gameplay.receiveAnswerFromOponent(DISCOVERED + "." + x + "." + y);
+		gameplay.receiveAnswerFromOpponent(DISCOVERED + "." + x + "." + y);
 		}
 	}
 
@@ -117,7 +117,7 @@ public class Player {
      * @param y
      * @return
      */
-    private String buildStruckAnswer(int x, int y) {
+    protected String buildStruckAnswer(int x, int y) {
         StringBuilder answer = new StringBuilder(STRUCK+".");
         Ship ship = area.getField(x, y).getShip();
         int xs, ys;
@@ -149,7 +149,7 @@ public class Player {
      * <br /> 2 when player hited opponent's ship and sink ship and wins match
      * <br /> 3 when player didn't hit ship or hited the discovered field or field doesn't exist
      */
-    public int receiveOpponentsAnswer(String answer)
+    public int receiveOpponentsAnswer(String answer, Gameplay gameplay)
     {
         String[] parts = answer.split("\\.");
         if (parts.length == 8 || parts.length == 9)
@@ -201,7 +201,7 @@ public class Player {
         }
     }
 
-    private void setMissedAroundSunkShip(Area area, int x, int y, int size, int orientation) {
+    protected void setMissedAroundSunkShip(Area area, int x, int y, int size, int orientation) {
         int i, j, lastX, lastY;
         if (orientation == Ship.HORIZONTAL)
         {
