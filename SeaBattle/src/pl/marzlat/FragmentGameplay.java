@@ -1,7 +1,6 @@
 package pl.marzlat;
 
 import java.util.List;
-import java.util.Random;
 
 import pl.marzlat.gameplayview.BoardView;
 import pl.marzlat.model.Area;
@@ -22,7 +21,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class GameplayFragment extends Fragment implements Gameplay {
+public class FragmentGameplay extends Fragment implements Gameplay {
 
 	public static final int GAME_NOT_STARTED = 0;
 	public static final int PLACEMENT = 1;
@@ -40,17 +39,15 @@ public class GameplayFragment extends Fragment implements Gameplay {
 	private Button buttonDone;
 	private TextView textCurrPlayer;
 
-	public GameplayFragment() {
-		gameplay = this;
-	}
-
 	private List<Ship> ships;
 	private Area area = new Area();
 
-	private Random r = new Random();
-
 	private int shipNumberToPlace;
 	private int state = GAME_NOT_STARTED;
+	
+	public FragmentGameplay() {
+		gameplay = this;
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -145,7 +142,7 @@ public class GameplayFragment extends Fragment implements Gameplay {
 	@Override
 	public void sendQueryToOppenent(int x, int y, Gameplay gameplay) {
 		Log.d("Gameplay", "Send query to opponent: " + x + " " + y);
-		//boardView.setBlocked(true);
+		boardView.setBlocked(true);
 
 		boardView.setBoardAndDraw(player1.getOpponentsArea());
 		player2.receiveShot(x, y, gameplay);
@@ -179,44 +176,41 @@ public class GameplayFragment extends Fragment implements Gameplay {
 				//boardView.setBlocked(true);
 			} else if (retval == 3) {
 				state = PLAYER_2_ROUND;
-
-				Log.d("showOpponentArea", "3");
-				showOpponentArea();
-				try { Thread.sleep(1500); } catch (InterruptedException e) { }
-
-				setPleyerName(player2.getName());
-				Log.d("showPlayerArea", "2");
-				showPlayerArea();
 				
 				//boardView.setBlocked(true);
-				if (player2.getClass() == ComputerPlayer.class)
+			
+				Log.d("showOpponentArea", "3");
+				showOpponentArea();
+				
+				if (player2.getClass() == ComputerPlayer.class) {
+					showOpponentArea();
 					new AndroidPlayerRound().execute();
+				
+				} else {
+					try { Thread.sleep(500); } catch (InterruptedException e) { }
+					//boardView.setBlocked(true);
+					setPleyerName(player2.getName());
+					Log.d("showPlayerArea", "2");
+					showPlayerArea();
+				}
 			}
-
-
 		} else {
-			Log.e("GameplayFragmnt", "Nie twoja kolej kurwa");
+			Log.e("GameplayFragmnt", "Opponent's turn");
 		}
 
 	}
-
-
 	
 	@Override
 	public void receiveQueryFromOpponent(final int x, final int y) {
 		Log.d("Gameplay", "Receive query from opponent: " + x + " " + y);
 
-				
 				String answer = player1.receiveShot(x, y);
 				sendAnswerToOpponent(answer);
-
 				//Log.d("showPlayerArea", "3");
 				//showPlayerArea();
 				try { Thread.sleep(500); } catch (InterruptedException e) { }
-
 				//Log.d("showOpponentArea", "4");
 				//showOpponentArea(); za chuj nie moze byc tutaj
-
 	}
 
 	@Override
@@ -224,8 +218,7 @@ public class GameplayFragment extends Fragment implements Gameplay {
 		Log.d("Gameplay", "Send answer to opponent: " + answer);
 
 		player2.receiveOpponentsAnswer(answer, gameplay);
-		
-		Log.e("Gameplay", "############");
+
 				if(answer.contains("MISSED")) {
 					state = PLAYER_1_ROUND;
 					showPlayerArea();
@@ -239,12 +232,8 @@ public class GameplayFragment extends Fragment implements Gameplay {
 
 					Log.d("showPlayerArea", "4");
 					showPlayerArea();
-					Log.e("Gameplay", "############");
 				}
-					
-				
-				
-				
+		
 				boardView.setBlocked(false);
 				
 				
@@ -316,7 +305,7 @@ public class GameplayFragment extends Fragment implements Gameplay {
 			int retval;
 			sleep(300);
 			showPlayerArea();
-			sleep(500);
+			sleep(400);
 			int[] coor = ((ComputerPlayer) player2).typeCoordinatesOfShot();
 			opponentsArea = player1.receiveShot(coor[0], coor[1]);
 			showPlayerArea();

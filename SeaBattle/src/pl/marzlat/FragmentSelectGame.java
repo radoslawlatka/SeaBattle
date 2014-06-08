@@ -36,11 +36,11 @@ public class FragmentSelectGame extends Fragment {
 	private Button vsAndroidButton, bluetoothButton, wifiButton;
 	private BluetoothAdapter btAdapter;
 	public static final int REQUEST_ENABLE_BT=0, REQUEST_BT_DEVICES = 1;
-	private GameplayFragment gameplay;
+	private FragmentGameplay gameplay;
 	
 	public FragmentSelectGame() {
 		btAdapter = BluetoothAdapter.getDefaultAdapter();
-		gameplay = new GameplayFragment();
+		gameplay = new FragmentGameplay();
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class FragmentSelectGame extends Fragment {
 			@Override
 			public void onClick(View v) {
 
-				GameplayFragment vsAndroid = new GameplayFragment();
+				FragmentGameplay vsAndroid = new FragmentGameplay();
 				vsAndroid.setPlayer1(createLocalPlayer());
 				vsAndroid.setPlayer2(createAndroidPlayer());
 
@@ -143,7 +143,10 @@ public class FragmentSelectGame extends Fragment {
 
 	public Player createLocalPlayer()
 	{
-		String name = "Asd";
+		String name = getActivity().getSharedPreferences(SeaBattle.PREFS_NAME, 0)
+				.getString(SeaBattle.PREFS_USERNAME, "Player");
+		if(name.equals(""))
+			name = "Player";
 		List<Ship> ships;
 		ships = createShips();
 		Area area = new Area();

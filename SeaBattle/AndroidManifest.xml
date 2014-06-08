@@ -50,7 +50,7 @@
             android:label="@string/label_bluetooth_devices"
             android:theme="@android:style/Theme.Dialog" />
         <activity
-            android:name="pl.marzlat.GameplayFragment"
+            android:name="pl.marzlat.FragmentGameplay"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_game_vs_android"
             android:theme="@android:style/Theme.Black.NoTitleBar" />
