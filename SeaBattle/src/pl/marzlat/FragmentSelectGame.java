@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.text.format.Formatter;
+import android.util.Log;
 import pl.marzlat.model.Area;
+import pl.marzlat.model.BluetoothClientPlayer;
+import pl.marzlat.model.BluetoothServerPlayer;
 import pl.marzlat.model.ComputerPlayer;
 import pl.marzlat.model.Player;
 import pl.marzlat.model.Ship;
-import pl.marzlat.model.WifiClientPlayer;
 import pl.marzlat.model.WifiServerPlayer;
 import android.app.Activity;
 import android.app.Dialog;
@@ -25,7 +27,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
@@ -101,13 +102,7 @@ public class FragmentSelectGame extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				if( !btAdapter.isEnabled() ) {
-					Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-					startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-				} else {
-					Intent selectBtDevice = new Intent(getActivity().getApplicationContext(), BluetoothDevicesActivity.class);
-					startActivityForResult(selectBtDevice, REQUEST_BT_DEVICES);
-				}
+				initBluetoothDialog(v);
 			}
 		});
 
@@ -115,16 +110,7 @@ public class FragmentSelectGame extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				/*GameplayFragment wifi = new GameplayFragment();
-				wifi.setPlayer1(createLocalPlayer());
-				//wifi.setPlayer2(new WifiClientPlayer("Wifi", createShips(), new Area(), "192.168.2.103", 1131));
-				wifi.setPlayer2(new WifiServerPlayer("Wifi", createShips(), new Area(), 1131));
-
-				replaceFragment(wifi);
-				 */
-				initWifiDialog(v);
-				
-				
+				initWifiDialog(v);	
 			}
 
 
@@ -186,7 +172,7 @@ public class FragmentSelectGame extends Fragment {
 		final Dialog dialog = new Dialog(v.getContext());
 		dialog.getContext().setTheme(android.R.style.Theme_Dialog);
 		dialog.setContentView(R.layout.dialog_wifi_client_server);
-		dialog.setTitle(getString(R.string.label_create_account));
+		dialog.setTitle(getString(R.string.label_wifi));
 
 		final TextView yourIpAddr = (TextView) dialog.findViewById(R.id.txt_your_ip);
 		final EditText enterIpAddr = (EditText) dialog.findViewById(R.id.edit_enter_ip);
@@ -203,7 +189,14 @@ public class FragmentSelectGame extends Fragment {
 			public void onClick(View v) {
 				switch(radioGroup.getCheckedRadioButtonId()) {
 				case R.id.radio_client :
-					gameplay.setPlayer2(new WifiClientPlayer("Przeciwnik", createShips(), new Area(), enterIpAddr.getText().toString(), 1131));
+					if( !btAdapter.isEnabled() ) {
+						Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+						startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+					} else {
+						Intent selectBtDevice = new Intent(getActivity().getApplicationContext(), BluetoothDevicesActivity.class);
+						startActivityForResult(selectBtDevice, REQUEST_BT_DEVICES);
+					}
+					//gameplay.setPlayer2(new WifiClientPlayer("Przeciwnik", createShips(), new Area(), enterIpAddr.getText().toString(), 1131));
 					break;
 				case R.id.radio_server :
 					gameplay.setPlayer2(new WifiServerPlayer("Przeciwnik", createShips(), new Area(),  1131));
@@ -245,6 +238,63 @@ public class FragmentSelectGame extends Fragment {
 			}
 		});
 
+	}
+	
+	private void initBluetoothDialog(View v) {
+		
+		final Dialog dialog = new Dialog(v.getContext());
+		dialog.getContext().setTheme(android.R.style.Theme_Dialog);
+		dialog.setContentView(R.layout.dialog_bt_client_server);
+		dialog.setTitle(getString(R.string.label_bluetooth));
+
+		final RadioGroup radioGroup = (RadioGroup) dialog.findViewById(R.id.radio_group);
+		
+		Button okButton = (Button) dialog.findViewById(R.id.btn_ok);
+		Button cancelButton = (Button) dialog.findViewById(R.id.btn_cancel);
+		
+		dialog.show();
+		
+		okButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				gameplay.setPlayer1(new Player(getActivity().getSharedPreferences(SeaBattle.PREFS_NAME, 0).getString(SeaBattle.PREFS_USERNAME, "Gracz"),
+						createShips(), new Area()) );
+				switch(radioGroup.getCheckedRadioButtonId()) {
+				case R.id.radio_client :
+					
+					if( !btAdapter.isEnabled() ) {
+						Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+						getActivity().startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+					} else {
+						Intent selectBtDevice = new Intent(getActivity().getApplicationContext(), BluetoothDevicesActivity.class);
+						getActivity().startActivityForResult(selectBtDevice, REQUEST_BT_DEVICES);
+					}
+					//gameplay.setPlayer2(new BluetoothClientPlayer("Przeciwnik", createShips(), new Area(), ));
+					break;
+				case R.id.radio_server :
+					gameplay.setPlayer2(new BluetoothServerPlayer("Przeciwnik", createShips(), new Area()));
+					replaceFragment(gameplay);
+				}
+				
+				dialog.dismiss();
+				
+			}
+			
+		});
+		
+		cancelButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+		
+	}
+	
+	public void receiveMacAddress(String address) {
+		Log.d("FragmentSelectGame", address);
+		gameplay.setPlayer2(new BluetoothClientPlayer("Przeciwnik", createShips(), new Area(), address));
+		replaceFragment(gameplay);
 	}
 
 	public static String getLocalIpAddress(Context context) {

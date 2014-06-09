@@ -16,15 +16,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-
-        <Button
-            android:id="@+id/button_yes"
-            style="@style/Button"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/btn_yes" />
-
+        
         <Button
             android:id="@+id/button_no"
             style="@style/Button"
@@ -32,6 +24,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/btn_no" />
+        
+        <Button
+            android:id="@+id/button_yes"
+            style="@style/Button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/btn_yes" />
     </LinearLayout>
 
 </LinearLayout>

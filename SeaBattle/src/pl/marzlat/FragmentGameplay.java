@@ -5,6 +5,8 @@ import java.util.List;
 
 import pl.marzlat.gameplayview.BoardView;
 import pl.marzlat.model.Area;
+import pl.marzlat.model.BluetoothClientPlayer;
+import pl.marzlat.model.BluetoothServerPlayer;
 import pl.marzlat.model.ComputerPlayer;
 import pl.marzlat.model.InappropriateLocationException;
 import pl.marzlat.model.Player;
@@ -360,6 +362,12 @@ public class FragmentGameplay extends Fragment implements Gameplay {
 		}
 		if(this.player2.getClass() == WifiClientPlayer.class){
 			((WifiClientPlayer)player2).setGameplay(this);
+		}
+		if(this.player2.getClass() == BluetoothClientPlayer.class){
+			((BluetoothClientPlayer)player2).setGameplay(this);
+		}
+		if(this.player2.getClass() == BluetoothServerPlayer.class){
+			((BluetoothServerPlayer)player2).setGameplay(this);
 		}
 	}	
 	
