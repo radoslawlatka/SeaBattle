@@ -1,5 +1,6 @@
 package pl.marzlat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pl.marzlat.gameplayview.BoardView;
@@ -42,10 +43,11 @@ public class FragmentGameplay extends Fragment implements Gameplay {
 	private TextView textCurrPlayer;
 
 	private List<Ship> ships;
-	private Area area = new Area();
+	private Area area;
 
 	private int shipNumberToPlace;
 	private int state = GAME_NOT_STARTED;
+	private List<Ship> shipsTemp;
 	
 	public FragmentGameplay() {
 		gameplay = this;
@@ -63,6 +65,9 @@ public class FragmentGameplay extends Fragment implements Gameplay {
 		textCurrPlayer = (TextView) view.findViewById(R.id.currentPlayer);
 
 		textCurrPlayer.setText(player1.getName());
+		ships = player1.getShips();
+		shipsTemp = new ArrayList<Ship>(ships);
+		area = player1.getArea();
 
 		Log.d("Gameplay", "Add listeners");
 		initListeners();
@@ -73,112 +78,133 @@ public class FragmentGameplay extends Fragment implements Gameplay {
 	}
 	
 	private void initListeners() {
-			buttonReset.setOnClickListener(new OnClickListener() {
+		buttonReset.setOnClickListener(new OnClickListener() {
 
-				@Override
-				public void onClick(View v) {
-					player1.getArea().removeAllShips();
-					boardView.setBoardAndDraw(player1.getArea());
-					shipNumberToPlace = ships.size();
-					boardView.setCurrentShip(ships.get(shipNumberToPlace-1));
+			@Override
+			public void onClick(View v) {
+				player1.getArea().removeAllShips();
+				boardView.setBoardAndDraw(player1.getArea());
+				shipsTemp = new ArrayList<Ship>(ships);
+				shipNumberToPlace = ships.size();
+				boardView.setCurrentShip(ships.get(shipNumberToPlace-1));
+				boardView.setBlocked(false);
+			}
+		});
+		
+		buttonAuto.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				shipsTemp = new ArrayList<Ship>();
+				area.autoPlacement(ships);
+				player1.drawArea();
+				boardView.setCurrentShip(null);
+				boardView.setBoardAndDraw(player1.getArea());
+				shipNumberToPlace = 0;
+			}
+		});
+
+		buttonDone.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (shipNumberToPlace == 0 && state == PLACEMENT)
+				{
+					buttonReset.setEnabled(false);
+					buttonAuto.setEnabled(false);
+					buttonDone.setEnabled(false);
+					boardView.setBoardAndDraw(player1.getOpponentsArea());
 					boardView.setBlocked(false);
+					boardView.setPlacementMenuDrawing(false);
+					state = PLAYER_1_ROUND;
 				}
-			});
-			
-			buttonAuto.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					area.autoPlacement(ships);
-					player1.drawArea();
-					boardView.setCurrentShip(null);
-					boardView.setBoardAndDraw(player1.getArea());
-					shipNumberToPlace = 0;
-					boardView.setBlocked(true);
+				else
+				{
+					Toast.makeText(getActivity().getApplicationContext(), 
+							R.string.toast_all_ships_not_placed , Toast.LENGTH_SHORT).show();
 				}
-			});
+			}
+		});
 
-			buttonDone.setOnClickListener(new OnClickListener() {
+		boardView.setOnClickListener(new OnClickListener() {
 
-				@Override
-				public void onClick(View v) {
-					if (shipNumberToPlace == 0 && state == PLACEMENT)
+			@Override
+			public void onClick(View v) {
+				int x = boardView.getClickedX();
+				int y = boardView.getClickedY();
+				String opponentsAnswer;
+				int retval;
+				Log.d("GameVsAndroidClass", x+" "+y);
+				if (x == -1 && y == -1 && !boardView.isEraseModeClicked())
+					return;
+				else if (boardView.isEraseModeClicked())
+				{
+					if (boardView.isEraseMode())
 					{
-						buttonReset.setEnabled(false);
-						buttonAuto.setEnabled(false);
-						buttonDone.setEnabled(false);
-						boardView.setBoardAndDraw(player1.getOpponentsArea());
-						boardView.setBlocked(false);
-						boardView.setPlacementMenuDrawing(false);
-						state = PLAYER_1_ROUND;
+						boardView.setEraseMode(false);
 					}
 					else
 					{
-						Toast.makeText(getActivity(), 
-								R.string.toast_all_ships_not_placed , Toast.LENGTH_SHORT).show();
+						boardView.setEraseMode(true);
 					}
+					return;
 				}
-			});
-			
-			boardView.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					int x = boardView.getClickedX();
-					int y = boardView.getClickedY();
-					String opponentsAnswer;
-					int retval;
-					Log.d("GameVsAndroidClass", x+" "+y);
-					if (x == -1 && y == -1 && !boardView.isEraseModeClicked())
-						return;
-					else if (boardView.isEraseModeClicked())
+				if (boardView.isBlocked() == false)
+				{
+					if (state == PLAYER_1_ROUND)
 					{
-						if (boardView.isEraseMode())
-						{
-							boardView.setEraseMode(false);
-						}
-						else
-						{
-							boardView.setEraseMode(true);
-						}
-						return;
+						sendQueryToOppenent(x, y, gameplay);
 					}
-					if (boardView.isBlocked() == false) {
-						if (state == PLAYER_1_ROUND) {
-							sendQueryToOppenent(x, y, gameplay);
-						} else if (state == PLACEMENT) 
+					else if (state == PLACEMENT)
+					{
+						if (shipNumberToPlace > 0 || boardView.isEraseMode())
 						{
-							if (shipNumberToPlace > 0)
+							if (!boardView.isEraseMode())
 							{
-								if (!boardView.isEraseMode())
-								{
-									try {
-										area.placeShip(ships.get(shipNumberToPlace-1), boardView.getShipOrientation(), x, y);
-										boardView.setBoardAndDraw(area);
-										shipNumberToPlace--;
-										if (shipNumberToPlace > 0)
-											boardView.setCurrentShip(ships.get(shipNumberToPlace-1));
-										else
-											boardView.setCurrentShip(null);
-									} catch (InappropriateLocationException e) {
-										Toast.makeText(getActivity(), getString(R.string.toast_Inappropriate_location), Toast.LENGTH_SHORT).show();
-									} catch (ShipsAdjoinException e) {
-										Toast.makeText(getActivity(), getString(R.string.toast_too_near_from_another_ship), Toast.LENGTH_SHORT).show();
-									}								
-								}
-								else if (boardView.isEraseMode())
-								{
-									Log.d("Gra", "usuwanie statku");
-									area.removeShipFromArea(x, y);
+								try {
+									area.placeShip(shipsTemp.get(shipNumberToPlace-1), 
+											boardView.getShipOrientation(), x, y);
+									shipsTemp.remove(shipNumberToPlace-1);
 									boardView.setBoardAndDraw(area);
+									shipNumberToPlace--;
+									if (shipNumberToPlace > 0)
+										boardView.setCurrentShip(shipsTemp.get(shipNumberToPlace-1));
+									else
+										boardView.setCurrentShip(null);
+								} catch (InappropriateLocationException e) {
+									Toast.makeText(getActivity()
+											.getApplicationContext(), 
+											getString(R.string.toast_Inappropriate_location), 
+											Toast.LENGTH_SHORT)
+											.show();
+								} catch (ShipsAdjoinException e) {
+									Toast.makeText(getActivity()
+											.getApplicationContext(),
+											getString(R.string.toast_too_near_from_another_ship), 
+											Toast.LENGTH_SHORT)
+											.show();
+								}								
+							}
+							else if (boardView.isEraseMode())
+							{
+								Log.d("Gra", "usuwanie statku");
+								Ship ship = area.removeShipFromArea(x, y);
+								boardView.setBoardAndDraw(area);
+								if (ship != null)
+								{
+									shipsTemp.add(ship);
+									shipNumberToPlace++;
+									boardView.setCurrentShip(ship);
 								}
-							}				
-						}
+								
+							}
+						}				
 					}
 				}
-			});
+			}
+		});
 	}
-
+	
 	@Override
 	public void sendQueryToOppenent(int x, int y, Gameplay gameplay) {
 		Log.d("Gameplay", "Send query to opponent: " + x + " " + y);
