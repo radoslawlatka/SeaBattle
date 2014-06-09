@@ -259,27 +259,28 @@ public class FragmentSelectGame extends Fragment {
 			public void onClick(View v) {
 				gameplay.setPlayer1(new Player(getActivity().getSharedPreferences(SeaBattle.PREFS_NAME, 0).getString(SeaBattle.PREFS_USERNAME, "Gracz"),
 						createShips(), new Area()) );
-				switch(radioGroup.getCheckedRadioButtonId()) {
-				case R.id.radio_client :
+				
+				if( !btAdapter.isEnabled() ) {
+					Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+					getActivity().startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+				} else {
 					
-					if( !btAdapter.isEnabled() ) {
-						Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-						getActivity().startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-					} else {
+					switch(radioGroup.getCheckedRadioButtonId()) {
+					case R.id.radio_client :
 						Intent selectBtDevice = new Intent(getActivity().getApplicationContext(), BluetoothDevicesActivity.class);
 						getActivity().startActivityForResult(selectBtDevice, REQUEST_BT_DEVICES);
+						//gameplay.setPlayer2(new BluetoothClientPlayer("Przeciwnik", createShips(), new Area(), ));
+						break;
+					case R.id.radio_server :
+						gameplay.setPlayer2(new BluetoothServerPlayer("Przeciwnik", createShips(), new Area()));
+						replaceFragment(gameplay);
 					}
-					//gameplay.setPlayer2(new BluetoothClientPlayer("Przeciwnik", createShips(), new Area(), ));
-					break;
-				case R.id.radio_server :
-					gameplay.setPlayer2(new BluetoothServerPlayer("Przeciwnik", createShips(), new Area()));
-					replaceFragment(gameplay);
+					dialog.dismiss();
 				}
 				
-				dialog.dismiss();
-				
+
 			}
-			
+
 		});
 		
 		cancelButton.setOnClickListener(new OnClickListener() {

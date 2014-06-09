@@ -47,7 +47,7 @@
     <pl.marzlat.gameplayview.BoardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:alpha="0.5"
+        android:alpha="0.7"
         android:id="@+id/board_view" />
 
 </LinearLayout>
